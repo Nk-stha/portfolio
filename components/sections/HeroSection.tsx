@@ -2,15 +2,29 @@ import React from "react";
 import Image from "next/image";
 import { Button } from "../ui/Button";
 import { Icon } from "../ui/Icon";
+import type { Profile } from "@/lib/types/portfolio";
 
-export function HeroSection() {
+interface HeroSectionProps {
+  profile: Profile | null;
+}
+
+export function HeroSection({ profile }: HeroSectionProps) {
+  // Fallback values if profile not loaded
+  const name = profile?.name || "Developer";
+  const title = profile?.title || "Full Stack Engineer";
+  const greeting = profile?.hero?.greeting || "Hello!";
+  const tagline = profile?.hero?.tagline || "";
+  const yearsExperience = profile?.hero?.yearsExperience || 0;
+  const projectsShipped = profile?.hero?.projectsShipped || 0;
+  const avatarUrl = profile?.avatarUrl || "/animatedprofile.png";
+
   return (
-    <section className="pt-40 pb-20 relative overflow-hidden bg-background-light dark:bg-background-dark">
+    <section className="pt-40 relative overflow-hidden bg-white dark:bg-background-dark">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10 text-center">
         {/* Hello Badge */}
         <div className="inline-flex items-center justify-center px-6 py-2 border border-gray-300 dark:border-gray-700 rounded-full mb-6 bg-white dark:bg-surface-dark shadow-sm">
           <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
-            Hello!
+            {greeting}
           </span>
           <Icon
             name="waving_hand"
@@ -21,25 +35,28 @@ export function HeroSection() {
 
         {/* Main Heading */}
         <h1 className="text-5xl md:text-7xl font-bold leading-tight mb-4 text-gray-900 dark:text-white">
-          I&apos;m <span className="text-primary">Rohan,</span>
+          I&apos;m <span className="text-primary">{name.split(" ")[0]},</span>
           <br />
-          Full Stack Engineer
+          {title}
         </h1>
 
         {/* Content Container with Image and Decorations */}
-        <div className="relative mt-12 mb-20">
+        <div className="relative mt-12">
           {/* Left Quote and Stats */}
           <div className="absolute top-0 left-4 md:left-20 text-left max-w-[200px] hidden md:block">
-            <span className="text-4xl text-gray-800 dark:text-gray-200 font-serif">
-              &quot;
-            </span>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-              Jenny&apos;s robust code architecture scaled our platform to
-              millions of users seamlessly.
-            </p>
+            <div className="relative">
+              {/* Quote Icon */}
+              <Icon
+                name="format_quote"
+                className="text-6xl text-gray-400 dark:text-gray-600 absolute top-0 right-50 opacity-20"
+              />
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 pt-4">
+                {tagline}
+              </p>
+            </div>
             <div className="mt-8">
               <h3 className="text-3xl font-bold text-gray-900 dark:text-white">
-                50+
+                {projectsShipped}+
               </h3>
               <p className="text-xs text-gray-500 uppercase tracking-wide">
                 Projects Shipped
@@ -55,7 +72,7 @@ export function HeroSection() {
               ))}
             </div>
             <h3 className="text-3xl font-bold text-gray-900 dark:text-white">
-              10 Years
+              {yearsExperience} Years
             </h3>
             <p className="text-lg text-gray-600 dark:text-gray-400">Experts</p>
             <div className="h-0.5 w-full bg-gray-300 dark:bg-gray-700 mt-2"></div>
@@ -63,22 +80,25 @@ export function HeroSection() {
 
           {/* Hero Image */}
           <div className="relative inline-block">
-            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[300px] h-[300px] md:w-[500px] md:h-[500px] bg-primary rounded-t-full opacity-90 z-0"></div>
+            {/* Orange Circle Background */}
+            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[300px] h-[300px] md:w-[600px] md:h-[350px] bg-primary rounded-t-full opacity-90 z-0"></div>
+
+            {/* Profile Image */}
             <Image
-              alt="Portrait of Jenny, Full Stack Engineer"
+              alt={`Portrait of ${name}, ${title}`}
               className="relative z-10 w-[280px] md:w-[450px] mx-auto"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBy5IU835WnQOLt84hZUb5S8JwuuVXMslxeVwjV_eKZD1oVyGW_sYrnpWdQrBCdD4ys0Sor-Rs_TKe9RmHyMmZSBAw4AGVHUPYBluPN5a0ca90_acOVh6kCZAEsfdAffYxi2PgRo3MElkz_kelN-SEiZ0nNhFCKJrbae2ysibrLN3LwxNPzqaMERf3Aue1HWvZh1hDJ0T5vI_9rvaAMVqVtdxkgkY7Exu5fTRhp5oFh0b3N-a5BZIZLIyktV8DAgvNeunsTl-JJMwA"
+              src={avatarUrl}
               width={450}
               height={600}
               priority
             />
 
             {/* CTA Buttons */}
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 bg-white/10 backdrop-blur-sm p-2 rounded-full border border-white/20">
-              <Button href="#portfolio" icon="north_east">
+            <div className="absolute bottom-4 w-[335px] left-1/2 -translate-x-1/2 z-20 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 bg-white/10 backdrop-blur-sm p-2 rounded-full border border-white/20">
+              <Button href="/#portfolio" icon="north_east">
                 Portfolio
               </Button>
-              <Button href="#contact" variant="ghost">
+              <Button href="/#contact" variant="ghost">
                 Hire Me
               </Button>
             </div>

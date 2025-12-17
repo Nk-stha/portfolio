@@ -1,9 +1,20 @@
 import React from "react";
 import Link from "next/link";
-import { FOOTER_NAV, SOCIAL_LINKS } from "@/lib/constants/portfolio-data";
 import { Icon } from "../ui/Icon";
+import type { Profile } from "@/lib/types/portfolio";
 
-export function Footer() {
+interface FooterProps {
+  profile: Profile | null;
+}
+
+export function Footer({ profile }: FooterProps) {
+  const name = profile?.name?.split(" ")[0] || "Rohan";
+  const socialLinks = profile?.socialLinks || [];
+  const footerNav = profile?.footerNav || [];
+  const phone = profile?.phone || "";
+  const website = profile?.website || "";
+  const email = profile?.email || "";
+
   return (
     <footer className="bg-secondary-dark text-gray-400 py-16 px-4">
       <div className="max-w-7xl mx-auto">
@@ -15,10 +26,10 @@ export function Footer() {
             </h2>
             <div className="flex items-center space-x-2 mb-6">
               <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold text-xl">
-                J
+                {name.charAt(0)}
               </div>
               <span className="text-2xl font-bold text-white tracking-tight">
-                Jenny
+                {name}
               </span>
             </div>
             <p className="text-sm leading-relaxed mb-6">
@@ -26,7 +37,7 @@ export function Footer() {
               scalable web applications. Let&apos;s build something amazing together.
             </p>
             <div className="flex space-x-4">
-              {SOCIAL_LINKS.map((social) => (
+              {socialLinks.map((social) => (
                 <Link
                   key={social.platform}
                   href={social.href}
@@ -44,7 +55,7 @@ export function Footer() {
             <div>
               <h4 className="text-primary font-bold mb-6">Navigation</h4>
               <ul className="space-y-3 text-sm">
-                {FOOTER_NAV.map((link) => (
+                {footerNav.map((link) => (
                   <li key={link.label}>
                     <Link
                       href={link.href}
@@ -61,9 +72,9 @@ export function Footer() {
             <div>
               <h4 className="text-primary font-bold mb-6">Contact</h4>
               <ul className="space-y-3 text-sm">
-                <li>+012-3456-789</li>
-                <li>www.jennydev.com</li>
-                <li>hello@jennydev.com</li>
+                {phone && <li>{phone}</li>}
+                {website && <li>{website}</li>}
+                {email && <li>{email}</li>}
               </ul>
             </div>
 
@@ -99,7 +110,7 @@ export function Footer() {
         {/* Bottom Section */}
         <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center text-xs">
           <p>
-            Copyright © 2023 <span className="text-primary">Jenny</span>. All
+            Copyright © {new Date().getFullYear()} <span className="text-primary">{name}</span>. All
             Rights Reserved.
           </p>
           <div className="flex space-x-6 mt-4 md:mt-0">

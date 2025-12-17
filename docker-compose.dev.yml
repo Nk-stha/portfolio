@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  # =============================================================================
+  # MongoDB Database (Same as Prod)
+  # =============================================================================
+  mongodb:
+    image: mongo:7-jammy
+    container_name: portfolio-mongodb-dev
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: portfolio
+    volumes:
+      - mongodb_data_dev:/data/db
+      - mongodb_config_dev:/data/configdb
+    ports:
+      - "27017:27017"
+    networks:
+      - portfolio-network-dev
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # =============================================================================
+  # Portfolio Next.js Application (Dev Mode)
+  # =============================================================================
+  portfolio:
+    image: node:22-alpine # Use base node image to skip multi-stage build complexity for dev
+    container_name: portfolio-app-dev
+    working_dir: /app
+    
+    # Mount local directory to /app for hot reloading
+    volumes:
+      - .:/app
+      - /app/node_modules # Prevent host node_modules from conflicting/being overwritten
+      - /app/.next        # Persist build cache inside container
+
+    # Install dependencies and start dev server
+    # We use 'npm install' to ensure container has deps, then 'npm run dev'
+    command: sh -c "npm install && npm run dev"
+    
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=development
+      - MONGODB_URI=mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@portfolio-mongodb-dev:27017/portfolio?authSource=admin
+      
+    ports:
+      - "3001:3001" # Maps localhost:3001 -> container:3001 (Matching .env PORT)
+    
+    depends_on:
+      mongodb:
+        condition: service_healthy
+        
+    networks:
+      - portfolio-network-dev
+
+# =============================================================================
+# Networks & Volumes
+# =============================================================================
+networks:
+  portfolio-network-dev:
+    driver: bridge
+
+volumes:
+  mongodb_data_dev:
+    driver: local
+  mongodb_config_dev:
+    driver: local

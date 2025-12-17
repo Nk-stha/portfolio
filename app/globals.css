@@ -72,3 +72,19 @@ body {
     transform: translateX(-50%);
   }
 }
+
+
+/* Quote Decoration */
+.quote::before {
+  content: "\201C";
+  font-size: 4rem;
+  line-height: 1;
+  color: rgba(31, 31, 31, 0.15);
+  position: absolute;
+  top: -30px;
+  left: -36px;
+}
+
+.dark .quote::before {
+  color: rgba(255, 255, 255, 0.15);
+}

@@ -1,9 +1,17 @@
 import React from "react";
 import Image from "next/image";
-import { TESTIMONIALS } from "@/lib/constants/portfolio-data";
 import { Icon } from "../ui/Icon";
+import type { Testimonial } from "@/lib/types/portfolio";
 
-export function TestimonialsSection() {
+interface TestimonialsSectionProps {
+  testimonials: Testimonial[];
+}
+
+export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) {
+  if (testimonials.length === 0) {
+    return null;
+  }
+
   return (
     <section className="py-24 bg-secondary-dark text-white rounded-t-[3rem] -mb-10 relative z-10 mx-2 md:mx-4">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -26,9 +34,9 @@ export function TestimonialsSection() {
 
         {/* Testimonials Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-          {TESTIMONIALS.map((testimonial) => (
+          {testimonials.map((testimonial) => (
             <div
-              key={testimonial.id}
+              key={testimonial._id}
               className={`bg-surface-dark p-8 rounded-3xl relative ${
                 testimonial.isPrimary ? "" : "opacity-80 md:opacity-100"
               }`}
@@ -61,18 +69,18 @@ export function TestimonialsSection() {
               {/* Author Info */}
               <div className="flex items-center">
                 <Image
-                  alt={testimonial.name}
+                  alt={testimonial.author.name}
                   className={`w-12 h-12 rounded-full mr-4 border-2 ${
                     testimonial.isPrimary ? "border-primary" : "border-gray-600"
                   }`}
-                  src={testimonial.image}
+                  src={testimonial.author.image}
                   width={48}
                   height={48}
                 />
                 <div>
-                  <h4 className="font-bold text-white">{testimonial.name}</h4>
+                  <h4 className="font-bold text-white">{testimonial.author.name}</h4>
                   <p className="text-xs text-gray-400">
-                    {testimonial.role}, {testimonial.company}
+                    {testimonial.author.role}, {testimonial.author.company}
                   </p>
                 </div>
               </div>

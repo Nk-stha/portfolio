@@ -1,21 +1,33 @@
 import React from "react";
 import Image from "next/image";
 import { Button } from "../ui/Button";
+import type { Profile } from "@/lib/types/portfolio";
 
-export function AboutSection() {
+interface AboutSectionProps {
+  profile: Profile | null;
+}
+
+export function AboutSection({ profile }: AboutSectionProps) {
+  const name = profile?.name || "Developer";
+  const avatarUrl = profile?.avatarUrl || "/animatedprofile.png";
+  const headline = profile?.about?.headline || "Why You Hire Me for Your Next Project?";
+  const description = profile?.about?.description || "";
+  const stats = profile?.about?.stats || [];
+
   return (
     <section className="py-20 bg-gray-50 dark:bg-[#1A1A1A]">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="flex flex-col md:flex-row items-center gap-12">
           {/* Left - Image */}
           <div className="w-full md:w-1/2 relative">
-            <div className="aspect-square bg-primary rounded-full relative overflow-visible">
+            <div className="aspect-square bg-primary rounded-full relative overflow-hidden">
               <Image
-                alt="Jenny Portrait"
-                className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[90%] z-10 rounded-b-full"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-dBgdVA8mqpxYOQUYqKqD4DAV61UTuyNKTZy-a_YMFyAZW5SDABmuCpdwWokDM1BjjNsKen9JXzLVZ5d5zZXZJix3WS6Hl-MkG0I2sIpMJK5te07i62deJaZY6j26Dj5GrKB64KosJVZMGQHdbUGX6VtOHnMHZvW12v9B5Yx7nWvsaB_I8WaGDHnB3kvUaP-wKyaba0nvZCGYbkFfQQ9Xjumd6ZIxwRz8_Eiq6UUC1DfCRrGgJH19xwlJ0RtqXozYh9YpCdT8AvQ"
+                alt={`${name} Portrait`}
+                className="absolute inset-0 w-full h-full object-cover object-top"
+                src={avatarUrl}
                 width={500}
                 height={500}
+                priority
               />
               {/* Decorative Elements */}
               <div className="absolute top-10 right-10 w-4 h-4 bg-black rounded-full opacity-20"></div>
@@ -35,30 +47,21 @@ export function AboutSection() {
               Next Project?
             </h2>
             <p className="text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
-              I bring a unique blend of systematic backend logic and creative
-              frontend flair. I don&apos;t just write code; I build sustainable,
-              scalable digital products that solve real business problems. My
-              approach is user-centric and performance-obsessed.
+              {description}
             </p>
 
             {/* Stats Grid */}
             <div className="grid grid-cols-2 gap-8 mb-10">
-              <div>
-                <h3 className="text-3xl font-bold text-gray-900 dark:text-white">
-                  600+
-                </h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  Commits this year
-                </p>
-              </div>
-              <div>
-                <h3 className="text-3xl font-bold text-gray-900 dark:text-white">
-                  50+
-                </h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  Tech Stack Mastered
-                </p>
-              </div>
+              {stats.map((stat, index) => (
+                <div key={index}>
+                  <h3 className="text-3xl font-bold text-gray-900 dark:text-white">
+                    {stat.value}
+                  </h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    {stat.label}
+                  </p>
+                </div>
+              ))}
             </div>
 
             <Button href="#contact" variant="outline">

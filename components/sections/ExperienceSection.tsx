@@ -1,7 +1,15 @@
 import React from "react";
-import { EXPERIENCES } from "@/lib/constants/portfolio-data";
+import type { Experience } from "@/lib/types/portfolio";
 
-export function ExperienceSection() {
+interface ExperienceSectionProps {
+  experiences: Experience[];
+}
+
+export function ExperienceSection({ experiences }: ExperienceSectionProps) {
+  if (experiences.length === 0) {
+    return null;
+  }
+
   return (
     <section className="py-24 bg-background-light dark:bg-background-dark" id="resume">
       <div className="max-w-4xl mx-auto px-4 sm:px-6">
@@ -14,9 +22,9 @@ export function ExperienceSection() {
           <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-px bg-gray-200 dark:bg-gray-700 hidden md:block"></div>
 
           {/* Experience Items */}
-          {EXPERIENCES.map((exp, index) => (
+          {experiences.map((exp) => (
             <div
-              key={exp.id}
+              key={exp._id}
               className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 relative"
             >
               {/* Left Side - Company Info */}
@@ -39,7 +47,7 @@ export function ExperienceSection() {
               ></div>
 
               {/* Right Side - Role and Description */}
-              <div className="w-full md:w-5/12 pl-0 md:pl-8 border-l-2 border-gray-200 dark:border-gray-700 md:border-l-0 pl-4 md:pl-0">
+              <div className="w-full md:w-5/12 pl-4 md:pl-8 border-l-2 border-gray-200 dark:border-gray-700 md:border-l-0">
                 <h4 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
                   {exp.role}
                 </h4>

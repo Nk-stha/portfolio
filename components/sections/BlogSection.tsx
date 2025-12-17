@@ -1,11 +1,19 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { BLOG_POSTS } from "@/lib/constants/portfolio-data";
 import { Icon } from "../ui/Icon";
 import { Button } from "../ui/Button";
+import type { BlogPost } from "@/lib/types/portfolio";
 
-export function BlogSection() {
+interface BlogSectionProps {
+  posts: BlogPost[];
+}
+
+export function BlogSection({ posts }: BlogSectionProps) {
+  if (posts.length === 0) {
+    return null;
+  }
+
   return (
     <section className="py-24 bg-background-light dark:bg-background-dark">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -23,21 +31,21 @@ export function BlogSection() {
 
         {/* Blog Posts Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {BLOG_POSTS.map((post) => (
-            <div key={post.id} className="group">
+          {posts.map((post) => (
+            <div key={post._id} className="group">
               {/* Post Image */}
               <div className="rounded-3xl overflow-hidden mb-6 relative h-64">
                 <Image
                   alt={post.title}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                  src={post.image}
+                  src={post.featuredImage}
                   width={400}
                   height={300}
                 />
                 <Link
-                  href="#"
+                  href={`/blog/${post.slug}`}
                   className={`absolute bottom-4 right-4 w-12 h-12 ${
-                    post.isPrimary
+                    post.isFeatured
                       ? "bg-primary text-white"
                       : "bg-white dark:bg-surface-dark text-gray-900 dark:text-white"
                   } rounded-full flex items-center justify-center hover:bg-primary hover:text-white transition-colors`}
@@ -61,9 +69,13 @@ export function BlogSection() {
               {/* Post Meta */}
               <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
                 <span className="w-2 h-2 rounded-full bg-primary mr-2"></span>
-                {post.author}
+                {post.author.name}
                 <span className="mx-2">•</span>
-                {post.date}
+                {new Date(post.publishedAt).toLocaleDateString("en-US", {
+                  day: "2-digit",
+                  month: "short",
+                  year: "numeric",
+                })}
               </div>
             </div>
           ))}

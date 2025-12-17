@@ -3,11 +3,15 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { PROJECTS } from "@/lib/constants/portfolio-data";
 import { Icon } from "../ui/Icon";
 import { Button } from "../ui/Button";
+import type { Project } from "@/lib/types/portfolio";
 
-export function PortfolioSection() {
+interface PortfolioSectionProps {
+  projects: Project[];
+}
+
+export function PortfolioSection({ projects }: PortfolioSectionProps) {
   const [activeFilter, setActiveFilter] = useState<string>("all");
 
   const categories = [
@@ -15,12 +19,17 @@ export function PortfolioSection() {
     { id: "saas", label: "SaaS Platforms" },
     { id: "ecommerce", label: "E-Commerce" },
     { id: "mobile", label: "Mobile Apps" },
+    { id: "web", label: "Web Apps" },
   ];
 
   const filteredProjects =
     activeFilter === "all"
-      ? PROJECTS
-      : PROJECTS.filter((project) => project.category === activeFilter);
+      ? projects
+      : projects.filter((project) => project.category === activeFilter);
+
+  if (projects.length === 0) {
+    return null;
+  }
 
   return (
     <section
@@ -70,7 +79,7 @@ export function PortfolioSection() {
           {/* Project Cards */}
           {filteredProjects.map((project) => (
             <div
-              key={project.id}
+              key={project._id}
               className="group bg-gray-100 dark:bg-surface-dark rounded-3xl p-4 md:p-6 hover:shadow-xl transition-shadow duration-300"
             >
               <div className="rounded-2xl overflow-hidden mb-6 relative h-[300px]">
@@ -83,7 +92,7 @@ export function PortfolioSection() {
                 />
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                   <Link
-                    href="#"
+                    href={project.caseStudyUrl || "#"}
                     className="bg-white text-gray-900 px-6 py-2 rounded-full font-medium transform translate-y-4 group-hover:translate-y-0 transition-transform"
                   >
                     View Case Study

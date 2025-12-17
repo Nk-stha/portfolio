@@ -1,10 +1,10 @@
 import type {
     NavLink,
-    ProcessStep,
-    Experience,
-    Project,
-    Testimonial,
-    BlogPost,
+    ProcessStepInput,
+    ExperienceInput,
+    ProjectInput,
+    TestimonialInput,
+    BlogPostInput,
     SocialLink,
 } from "../types/portfolio";
 
@@ -17,71 +17,78 @@ export const NAV_LINKS: NavLink[] = [
     { label: "Contact Us", href: "#contact" },
 ];
 
-export const PROCESS_STEPS: ProcessStep[] = [
+export const PROCESS_STEPS: ProcessStepInput[] = [
     {
         id: 1,
-        icon: "lightbulb",
-        title: "Discovery & Planning",
+        icon: "architecture",
+        title: "System Architecture Design",
         description:
-            "Defining the roadmap. We align technical requirements with business goals to build a solid foundation.",
-        items: ["Requirement Analysis", "Tech Stack Selection", "Architecture Design"],
+            "Turn ideas into a scalable technical blueprint. Defining system components and how they interact.",
+        items: ["Requirement Analysis", "High-Level Architecture (HLD)", "Tech Stack Selection"],
     },
     {
         id: 2,
-        icon: "design_services",
-        title: "Design & Prototyping",
+        icon: "code",
+        title: "Development (Build Phase)",
         description:
-            "Visualizing the solution. Translating ideas into interactive prototypes and high-fidelity UI designs.",
-        items: ["UI/UX Wireframing", "Interactive Prototypes", "Database Schema Design"],
+            "Convert architecture into production-ready code. Implementing clean architecture with SOLID principles.",
+        items: ["Backend & Frontend Development", "API Implementation", "Code Reviews & Standards"],
     },
     {
         id: 3,
-        icon: "code",
-        title: "Dev & Implementation",
+        icon: "integration_instructions",
+        title: "Implementation & Integration",
         description:
-            "Building the core. Writing clean, efficient, and scalable code for both frontend and backend systems.",
-        items: ["API Development", "Frontend Integration", "Microservices Setup"],
+            "Make all parts talk to each other reliably. Managing communication between services.",
+        items: ["Third-party Integrations", "Database Migrations", "Event-driven Systems"],
     },
     {
         id: 4,
         icon: "rocket_launch",
-        title: "Deploy & Maintenance",
+        title: "Deployment & Automation",
         description:
-            "Launch and sustain. Ensuring smooth deployment to production and ongoing system health.",
-        items: ["CI/CD Pipelines", "Cloud Infrastructure", "Performance Monitoring"],
+            "Ship fast, ship safely. Automated build, test, and release with zero-downtime deployment.",
+        items: ["CI/CD Pipelines", "Docker & Docker Compose", "Automated Testing"],
+    },
+    {
+        id: 5,
+        icon: "trending_up",
+        title: "Scalability & Performance",
+        description:
+            "Handle growth without breaking. Implementing load balancing and caching strategies.",
+        items: ["Auto Scaling", "Redis / CDN", "Database Optimization"],
+    },
+    {
+        id: 6,
+        icon: "monitoring",
+        title: "Monitoring & Maintenance",
+        description:
+            "Keep systems healthy long-term. Ensuring observability via logs, metrics, and traces.",
+        items: ["CloudWatch / Prometheus", "Error Tracking", "Security Hardening"],
     },
 ];
 
-export const EXPERIENCES: Experience[] = [
+export const EXPERIENCES: ExperienceInput[] = [
     {
         id: 1,
-        company: "Senior Engineer, TechFlow",
-        period: "Sep 2021 - Present",
-        role: "Lead Full Stack Developer",
+        company: "Devalaya Infosys",
+        period: "july 2024 - oct 2024",
+        role: "Full Stack Developer intenship",
         description:
-            "Architected a microservices-based e-commerce platform handling 50k requests/sec. Led a team of 6 developers in migrating legacy monolith to Node.js and React.",
+            "Architected a microservices-based e-commerce platform handling 50k requests/sec. During this period, I was responsible for migrating legacy monolith to Node.js and React. i have learn about microservices, monolith, and how to implement them, cloud platforms such as aws, docker, and kubernetes.",
         isPrimary: true,
     },
     {
         id: 2,
-        company: "Innovate Corp",
-        period: "Aug 2018 - Sep 2021",
-        role: "Backend Developer",
+        company: "Devalaya Infosys",
+        period: "oct 2024 - present",
+        role: "Full Stack Engineer",
         description:
-            "Developed RESTful APIs using Python/Django. Optimized database queries reducing load times by 40%. Implemented CI/CD pipelines with Jenkins.",
-    },
-    {
-        id: 3,
-        company: "StartUp Studio",
-        period: "Jun 2016 - Aug 2018",
-        role: "Web Developer",
-        description:
-            "Built responsive websites for various clients using HTML, CSS, and JavaScript. Collaborated with designers to ensure pixel-perfect implementation.",
-        isPrimary: true,
-    },
+            "Responsible for designing microservices and monoliths based web-application, Implementing clean architecture and setup file and folder for each project, Implementing CI/CD pipelines accoring to project requirements, Implementing load balancing and caching strategies, Implementing security hardening, Implementing observability via logs, metrics, and traces, creating docker images and deploying them to cloud platforms such as aws, ensuring security and scalability of the application.",
+    }
 ];
 
-export const PROJECTS: Project[] = [
+export const PROJECTS: ProjectInput[] = [
     {
         id: 1,
         title: "FinTech Dashboard",
@@ -102,7 +109,7 @@ export const PROJECTS: Project[] = [
     },
 ];
 
-export const TESTIMONIALS: Testimonial[] = [
+export const TESTIMONIALS: TestimonialInput[] = [
     {
         id: 1,
         name: "Henry, Arthur",
@@ -112,7 +119,7 @@ export const TESTIMONIALS: Testimonial[] = [
             "https://lh3.googleusercontent.com/aida-public/AB6AXuDea3VwKMM8QDge66UovbC9V6c3AEvn0f8sjYjvoKJ6zF4XhJUr1MoGM29mbibg1nZJaDuUKmAma0z1s2I7pOQ31B_K9Qptm3oUdudE0vFB36OHI_tI1V_lfWXMrGRMPJhU0tIBp-6SSG9tK8zRJTM2PpesdBdlqlns5U1r6AzomITWlEDu_9boALZ3lXEZkug0pBQm943WSr7kTPVtg2V8PDvNIWtQ0kaZUPRDyzNaEOuAjfyeoVXQaw0iggLK_kxqCHeBrVzzXWA",
         rating: 5.0,
         quote:
-            "Jenny is a rare find. She not only understands complex backend logic but also has an eye for frontend detail. She refactored our entire payment gateway integration in half the expected time.",
+            "Rohan is a rare find. She not only understands complex backend logic but also has an eye for frontend detail. She refactored our entire payment gateway integration in half the expected time.",
         isPrimary: true,
     },
     {
@@ -124,18 +131,18 @@ export const TESTIMONIALS: Testimonial[] = [
             "https://lh3.googleusercontent.com/aida-public/AB6AXuAo_rL6xPp7DbD4rMGNJ5kCkkdh39fXThH5wal2rPgxW4D8X-L-27T-wMT4Ex5pFvN9_9Zqqj1glL3Ie9w2909t2LBx1FpctJR4XWShwCCh7SgehOWDc93VcC1SoHLIX7RPrMopTW-uroP5UED-NUnerHcBHGvWhxRaAqRr_uMUg5C2kNFzYyIxkH69C12uiszeZpziRxv88xJCnWHhgUts0-BG3ONx8cmwbo16zfb1j4fMmEzu2V23KivYaBBCH8ECR5UJCOFMw_A",
         rating: 5.0,
         quote:
-            "Working with Jenny was seamless. Her communication is excellent, and her code quality is top-tier. She delivered our MVP ahead of schedule with zero critical bugs.",
+            "Working with Rohan was seamless. Her communication is excellent, and her code quality is top-tier. She delivered our MVP ahead of schedule with zero critical bugs.",
     },
 ];
 
-export const BLOG_POSTS: BlogPost[] = [
+export const BLOG_POSTS: BlogPostInput[] = [
     {
         id: 1,
         title: "Microservices vs Monolith: Choosing the Right Arch",
         category: "Backend",
         image:
             "https://lh3.googleusercontent.com/aida-public/AB6AXuBEHqzr6FiO0DVK2KSVIINugsmyKOGpQWlG00sXnuzwDgw-1z9InmTO4KthCWKRQE60HHN8NnaYoHnlVZ0sPlLtXaXcPEA6yu7WmNYjijYogo9DxE_Wb1_6N67HWh2WYjdmOTsC54HvWjIPrkiYCNDXSNgnujjWefE25yVCIjPMM9H2hufrfjMmVzvxjvuIOgVkDlTqOisqrp6T3P3PMQxXh-7kIF5tTPbi8K47XxekgCI6EjkjwoOybn4m3ts27bM_e1aMoyUSn-Q",
-        author: "Jenny Smith",
+        author: "Rohan shrestha",
         date: "22 July 2023",
     },
     {
@@ -144,7 +151,7 @@ export const BLOG_POSTS: BlogPost[] = [
         category: "Frontend",
         image:
             "https://lh3.googleusercontent.com/aida-public/AB6AXuDRkLKOeZd3WKBl0QqLa7p3SnfPIzpo3JrV-nERfdZnwi4OMLP7DBir2nyHI_-jBUxnQKnUh77bFwu-m3ABxtbdvC97V2kZT7f_hR8ryXq8M-e_tJunE186cpV3Ox4qQK5L4naElGMNbxqTyXbyquEqi1U-UH5QCDdnHcjd-oS8RHOzNu1u7Q1taree1lNYK8R8Fr5iJ0526e7JjVzr2ruNFJk7xGBbcag-f8-ACYw7f3TAF_2UE1fFTaCHa0Z5FdefgRMzvg5mcfU",
-        author: "Jenny Smith",
+        author: "Rohan shrestha",
         date: "15 Aug 2023",
         isPrimary: true,
     },
@@ -154,7 +161,7 @@ export const BLOG_POSTS: BlogPost[] = [
         category: "Security",
         image:
             "https://lh3.googleusercontent.com/aida-public/AB6AXuBCMSs52ogzMQTNOkn8KiSZO6Yyu7lqLqr5YhX_4T3gLDgmWUrXcli7RREPUrKNPeieUr8rAIHcH8FE1qg5OdRC1iQ29ke1JRLKHaNnn4LKfEMjc2hhYeuSKlgE-BHZp1m_sQu8RwiY-oADbgMCCYBcFQ1apJbYlbHgTUmHqFpL67lFVuKIjXxvHA0gWDBG16jJmECxR1QYbkLVYN4rpSMEL2wXwmzx19cZARJuHPZrmzwGQLUxlnFEWUFBKqn9rjoF1SCbWMxiAJo",
-        author: "Jenny Smith",
+        author: "Rohan shrestha",
         date: "02 Sept 2023",
     },
 ];
