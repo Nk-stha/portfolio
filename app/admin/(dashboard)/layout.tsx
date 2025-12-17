@@ -2,6 +2,9 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { Sidebar } from "@/components/admin/Sidebar";
 import React from "react";
+import { verifyRefreshToken } from "@/lib/auth/jwt";
+import { connectToDatabase } from "@/lib/db/mongoose";
+import { RefreshToken } from "@/lib/db/models";
 
 export default async function DashboardLayout({
   children,
@@ -9,12 +12,38 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const cookieStore = await cookies();
-  const adminKey = cookieStore.get("admin_key");
-  const accessKey = process.env.ADMIN_ACCESS_KEY || "secret";
+  const refreshTokenCookie = cookieStore.get("refreshToken");
 
-  // if (!adminKey || adminKey.value !== accessKey) {
-  //   redirect("/admin/login");
-  // }
+  // Check if refresh token exists and is valid
+  if (!refreshTokenCookie?.value) {
+    redirect("/admin/login");
+  }
+
+  try {
+    // Verify JWT signature
+    const decoded = verifyRefreshToken(refreshTokenCookie.value);
+    
+    if (!decoded) {
+      redirect("/admin/login");
+    }
+
+    // Verify token exists in database and is not revoked
+    await connectToDatabase();
+    
+    const storedToken = await RefreshToken.findOne({
+      token: refreshTokenCookie.value,
+      adminId: decoded.adminId,
+    });
+
+    if (!storedToken || !storedToken.isValid()) {
+      redirect("/admin/login");
+    }
+
+    // Token is valid, allow access
+  } catch (error) {
+    console.error("Auth verification error:", error);
+    redirect("/admin/login");
+  }
 
   return (
     <div className="flex min-h-screen bg-[#050505]">

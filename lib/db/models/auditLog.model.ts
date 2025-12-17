@@ -4,13 +4,10 @@ import mongoose, { Schema, Document, Model, Types } from "mongoose";
 export interface IAuditLog extends Document {
     action: "CREATE" | "UPDATE" | "DELETE" | "LOGIN";
     targetCollection: string;
-    documentId: Types.ObjectId;
+    documentId?: Types.ObjectId; // Made optional
     userId: Types.ObjectId | null;
     userEmail: string;
-    changes: {
-        before?: Record<string, unknown>;
-        after?: Record<string, unknown>;
-    };
+    changes: Record<string, unknown>; // Made flexible
     ipAddress: string;
     userAgent: string;
     createdAt: Date;
@@ -25,13 +22,10 @@ const AuditLogSchema = new Schema<IAuditLog>(
             required: true,
         },
         targetCollection: { type: String, required: true },
-        documentId: { type: Schema.Types.ObjectId, required: true },
+        documentId: { type: Schema.Types.ObjectId, required: false },
         userId: { type: Schema.Types.ObjectId, default: null },
         userEmail: { type: String, required: true },
-        changes: {
-            before: { type: Schema.Types.Mixed, default: {} },
-            after: { type: Schema.Types.Mixed, default: {} },
-        },
+        changes: { type: Schema.Types.Mixed, default: {} }, // Made flexible
         ipAddress: { type: String, default: "" },
         userAgent: { type: String, default: "" },
     },

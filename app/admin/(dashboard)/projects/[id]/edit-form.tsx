@@ -5,7 +5,7 @@ import { ResourceForm } from "@/components/admin/ResourceForm";
 export default function EditProjectForm({ project }: { project: any }) {
   const fields = [
     { name: "title", label: "Title", type: "text" as const, required: true },
-    { name: "description", label: "Description", type: "textarea" as const, required: true },
+    { name: "description", label: "Description", type: "markdown" as const, required: true },
     { name: "category", label: "Category", type: "text" as const, required: true },
     { name: "image", label: "Image URL", type: "image" as const, required: true },
     { name: "link", label: "Project Link", type: "text" as const },

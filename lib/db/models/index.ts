@@ -22,3 +22,12 @@ export type { IContactSubmission } from "./contactSubmission.model";
 
 export { AuditLog } from "./auditLog.model";
 export type { IAuditLog } from "./auditLog.model";
+
+export { AdminUser } from "./admin-user.model";
+export type { IAdminUser } from "./admin-user.model";
+
+export { RefreshToken } from "./refresh-token.model";
+export type { IRefreshToken } from "./refresh-token.model";
+
+export { LoginAttempt } from "./login-attempt.model";
+export type { ILoginAttempt } from "./login-attempt.model";

@@ -4,11 +4,14 @@ import { ResourceForm } from "@/components/admin/ResourceForm";
 
 export default function EditExperienceForm({ initialData }: { initialData: any }) {
   const fields = [
-    { name: "title", label: "Title", type: "text" as const, required: true },
     { name: "company", label: "Company", type: "text" as const, required: true },
-    { name: "location", label: "Location", type: "text" as const, required: true },
-    { name: "period", label: "Period", type: "text" as const, required: true },
-    { name: "description", label: "Description (Markdown)", type: "markdown" as const, required: true },
+    { name: "role", label: "Role/Position", type: "text" as const, required: true },
+    { name: "startDate", label: "Start Date", type: "date" as const, required: true },
+    { name: "endDate", label: "End Date (leave empty for current)", type: "date" as const },
+    { name: "description", label: "Description", type: "textarea" as const, required: true },
+    { name: "companyLogo", label: "Company Logo URL", type: "image" as const },
+    { name: "companyUrl", label: "Company Website", type: "text" as const },
+    { name: "isPrimary", label: "Featured Experience", type: "checkbox" as const },
     { name: "order", label: "Order", type: "number" as const },
   ];
 

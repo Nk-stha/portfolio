@@ -8,6 +8,7 @@ interface Message {
   _id: string;
   name: string;
   email: string;
+  message: string;
   status: "new" | "read" | "replied";
   createdAt: string;
 }
@@ -26,6 +27,10 @@ export function MessagesClient({ initialData }: { initialData: Message[] }) {
   const columns = [
     { header: "Name", accessorKey: "name" as keyof Message },
     { header: "Email", accessorKey: "email" as keyof Message },
+    { 
+      header: "Message", 
+      accessorKey: (row: Message) => <span className="text-gray-400 text-sm truncate max-w-[200px] block" title={row.message}>{row.message}</span> 
+    },
     {
       header: "Status",
       accessorKey: (row: Message) => {

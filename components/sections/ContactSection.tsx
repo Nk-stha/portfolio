@@ -1,20 +1,26 @@
 "use client";
 
 import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Icon } from "../ui/Icon";
 import { submitContact } from "@/lib/api/client";
+import { fadeInUp, slideInLeft, scaleIn } from "@/lib/animations";
 
 export function ContactSection() {
-  const [email, setEmail] = useState("");
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: ""
+  });
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
-  const [message, setMessage] = useState("");
+  const [responseMsg, setResponseMsg] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!email) {
+    if (!formData.email || !formData.name || !formData.message) {
       setStatus("error");
-      setMessage("Please enter your email address");
+      setResponseMsg("Please fill in all fields");
       return;
     }
 
@@ -22,77 +28,167 @@ export function ContactSection() {
     
     try {
       const result = await submitContact({
-        email,
+        name: formData.name,
+        email: formData.email,
+        message: formData.message,
         source: "contact_form",
       });
       
       setStatus("success");
-      setMessage(result.message);
-      setEmail("");
+      setResponseMsg(result.message);
+      setFormData({ name: "", email: "", message: "" });
     } catch (error) {
       setStatus("error");
-      setMessage(error instanceof Error ? error.message : "Failed to submit");
+      setResponseMsg(error instanceof Error ? error.message : "Failed to submit");
     }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   return (
     <section
-      className="pt-32 pb-24 bg-background-light dark:bg-background-dark"
+      className="py-24 bg-[#0a0a0a] text-white rounded-3xl mx-2 md:mx-4 relative overflow-hidden"
       id="contact"
     >
-      <div className="max-w-4xl mx-auto px-4 text-center">
-        <h2 className="text-4xl md:text-5xl font-bold mb-8 text-gray-900 dark:text-white">
-          Have An Awesome Project Idea?{" "}
-          <span className="text-primary">Let&apos;s Discuss</span>
-        </h2>
+        {/* Background Gradient */}
+        <div className="absolute top-0 right-0 w-1/2 h-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-orange-900/10 via-[#0a0a0a] to-[#0a0a0a] pointer-events-none" />
 
-        {/* Email Input with CTA */}
-        <form onSubmit={handleSubmit}>
-          <div className="bg-white dark:bg-surface-dark rounded-full shadow-lg p-2 pl-6 flex flex-col md:flex-row items-center border border-gray-100 dark:border-gray-700 max-w-2xl mx-auto">
-            <div className="p-2 text-primary">
-              <Icon name="mail_outline" />
-            </div>
-            <input
-              className="flex-grow bg-transparent border-none focus:ring-0 text-gray-700 dark:text-gray-200 placeholder-gray-400 w-full md:w-auto text-sm py-3 px-2 outline-none"
-              placeholder="Enter Email Address"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={status === "loading"}
-            />
-            <button 
-              type="submit"
-              disabled={status === "loading"}
-              className="bg-primary hover:bg-orange-600 text-white px-8 py-3 rounded-full text-sm font-medium transition-colors w-full md:w-auto mt-2 md:mt-0 disabled:opacity-50"
+      <motion.div 
+        className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+      >
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-start">
+            
+            {/* Left Column: Text & Info */}
+            <motion.div variants={slideInLeft}>
+                <span className="text-primary font-bold tracking-[0.2em] text-sm uppercase mb-4 block">
+                    Contact
+                </span>
+                <h2 className="text-4xl md:text-6xl font-bold leading-tight tracking-tight mb-6">
+                    Let&apos;s Work <br />
+                    <span className="text-primary">Together</span>
+                </h2>
+                <p className="text-gray-400 text-lg leading-relaxed mb-8 max-w-md">
+                    Have a project in mind? I&apos;m always excited to discuss new ideas and opportunities. 
+                    Drop a message and let&apos;s create something amazing.
+                </p>
+
+                <div className="space-y-6">
+                    <motion.div 
+                        className="flex items-center space-x-4" 
+                        whileHover={{ x: 5 }}
+                        transition={{ duration: 0.2 }}
+                    >
+                        <div className="w-12 h-12 rounded-xl bg-[#1a1a1a] flex items-center justify-center text-primary">
+                            <Icon name="mail_outline" size={24} />
+                        </div>
+                        <div>
+                            <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Email Me</p>
+                            <a href="mailto:contact@rohanshrestha.com.np" className="text-white hover:text-primary transition-colors">contact@rohanshrestha.com.np</a>
+                        </div>
+                    </motion.div>
+                     <motion.div 
+                        className="flex items-center space-x-4"
+                        whileHover={{ x: 5 }}
+                        transition={{ duration: 0.2 }}
+                    >
+                        <div className="w-12 h-12 rounded-xl bg-[#1a1a1a] flex items-center justify-center text-primary">
+                            <Icon name="location_on" size={24} />
+                        </div>
+                        <div>
+                            <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Location</p>
+                            <p className="text-white">Kathmandu, Nepal</p>
+                        </div>
+                    </motion.div>
+                </div>
+            </motion.div>
+
+            {/* Right Column: Form */}
+            <motion.div 
+                className="bg-[#111] border border-[#1a1a1a] rounded-2xl p-6 md:p-8"
+                variants={fadeInUp}
             >
-              {status === "loading" ? "Sending..." : "Book Call"}
-            </button>
-          </div>
-        </form>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <label htmlFor="name" className="text-sm font-medium text-gray-400">Name</label>
+                            <motion.input
+                                whileFocus={{ scale: 1.02, borderColor: "#ff6b35" }}
+                                id="name"
+                                name="name"
+                                type="text"
+                                required
+                                value={formData.name}
+                                onChange={handleChange}
+                                placeholder="John Doe"
+                                className="w-full bg-[#0a0a0a] border border-[#222] rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-primary transition-all"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label htmlFor="email" className="text-sm font-medium text-gray-400">Email</label>
+                            <motion.input
+                                whileFocus={{ scale: 1.02, borderColor: "#ff6b35" }}
+                                id="email"
+                                name="email"
+                                type="email"
+                                required
+                                value={formData.email}
+                                onChange={handleChange}
+                                placeholder="john@example.com"
+                                className="w-full bg-[#0a0a0a] border border-[#222] rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-primary transition-all"
+                            />
+                        </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                         <label htmlFor="message" className="text-sm font-medium text-gray-400">Message</label>
+                        <motion.textarea
+                            whileFocus={{ scale: 1.02, borderColor: "#ff6b35" }}
+                            id="message"
+                            name="message"
+                            required
+                            rows={4}
+                            value={formData.message}
+                            onChange={handleChange}
+                            placeholder="Tell me about your project..."
+                            className="w-full bg-[#0a0a0a] border border-[#222] rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-primary transition-all resize-none"
+                        />
+                    </div>
 
-        {/* Status Message */}
-        {message && (
-          <p className={`mt-4 text-sm ${status === "success" ? "text-green-500" : "text-red-500"}`}>
-            {message}
-          </p>
-        )}
+                    <motion.button
+                        whileHover={{ scale: 1.02, backgroundColor: "#ff8545" }}
+                        whileTap={{ scale: 0.98 }}
+                        type="submit"
+                        disabled={status === "loading"}
+                        className="w-full bg-primary text-white font-semibold py-4 rounded-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed mt-4 shadow-lg shadow-primary/25 relative overflow-hidden"
+                    >
+                        {status === "loading" ? (
+                             <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1 }}>
+                                <Icon name="sync" className="mx-auto" />
+                             </motion.div>
+                        ) : "Send Message"}
+                    </motion.button>
 
-        {/* Features List */}
-        <div className="flex flex-wrap justify-center gap-6 mt-8 text-xs font-medium text-gray-500 dark:text-gray-400">
-          <div className="flex items-center">
-            <Icon name="check" className="text-primary text-sm mr-1" />
-            4.9/5 Average Ratings
-          </div>
-          <div className="flex items-center">
-            <Icon name="check" className="text-primary text-sm mr-1" />
-            25+ Winning Awards
-          </div>
-          <div className="flex items-center">
-            <Icon name="check" className="text-primary text-sm mr-1" />
-            Certified Cloud Architect
-          </div>
+                    <AnimatePresence>
+                        {responseMsg && (
+                            <motion.div 
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                exit={{ opacity: 0, height: 0 }}
+                                className={`p-4 rounded-lg text-sm text-center ${status === "success" ? "bg-green-500/10 text-green-500" : "bg-red-500/10 text-red-500"}`}
+                            >
+                                {responseMsg}
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </form>
+            </motion.div>
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }

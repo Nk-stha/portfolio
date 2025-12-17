@@ -24,7 +24,7 @@ export function Sidebar() {
     { name: "Experience", href: "/admin/experiences", icon: Briefcase },
     { name: "Process", href: "/admin/process", icon: Layers },
     { name: "Testimonials", href: "/admin/testimonials", icon: Quote },
-    { name: "Messages", href: "/admin/contact", icon: MessageSquare },
+    { name: "Messages", href: "/admin/messages", icon: MessageSquare },
     { name: "Profile", href: "/admin/profile", icon: User },
   ];
 

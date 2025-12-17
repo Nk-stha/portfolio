@@ -19,7 +19,9 @@ import * as dotenv from "dotenv";
 import * as path from "path";
 
 // Load environment variables from .env (Docker Compose default)
-dotenv.config({ path: path.join(process.cwd(), ".env") });
+const envPath = path.join(process.cwd(), ".env");
+console.log(`Loading environment config from: ${envPath}`);
+dotenv.config({ path: envPath });
 
 // Import models
 import { Profile } from "../lib/db/models/profile.model";
@@ -41,7 +43,16 @@ import {
     FOOTER_NAV,
 } from "../lib/constants/portfolio-data";
 
-const MONGODB_URI = process.env.MONGODB_URI;
+let MONGODB_URI = process.env.MONGODB_URI;
+const username = process.env.MONGO_ROOT_USERNAME;
+const password = process.env.MONGO_ROOT_PASSWORD;
+const dbName = process.env.MONGO_INITDB_DATABASE || "portfolio";
+
+// If using Docker hostname but running locally (heuristic), try to use localhost with credentials
+if (MONGODB_URI && MONGODB_URI.includes("mongodb:27017") && username && password) {
+    console.log("⚠️  Detected Docker hostname in URI. Switching to localhost for script execution...");
+    MONGODB_URI = `mongodb://${username}:${password}@localhost:27017/${dbName}?authSource=admin`;
+}
 
 if (!MONGODB_URI) {
     console.error("❌ MONGODB_URI not found in environment variables");

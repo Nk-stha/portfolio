@@ -4,8 +4,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, Save, Loader2 } from "lucide-react";
 import Link from "next/link";
-
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeHighlight from "rehype-highlight";
 
 interface Field {
   name: string;
@@ -131,12 +132,18 @@ function MarkdownEditor({
                 <button type="button" onClick={() => insertFormat("*", "*")} className="p-1.5 text-gray-400 hover:text-white hover:bg-[#222] rounded" title="Italic">
                     <span className="italic text-xs font-serif">I</span>
                 </button>
+                <button type="button" onClick={() => insertFormat("`", "`")} className="p-1.5 text-gray-400 hover:text-white hover:bg-[#222] rounded font-mono" title="Inline Code">
+                    <span className="text-xs">&lt;/&gt;</span>
+                </button>
                 <div className="w-px h-4 bg-[#1a1a1a] mx-1" />
                  <button type="button" onClick={() => insertFormat("- ")} className="p-1.5 text-gray-400 hover:text-white hover:bg-[#222] rounded" title="List">
                     <span className="text-xs">List</span>
                 </button>
                 <button type="button" onClick={() => insertFormat("> ")} className="p-1.5 text-gray-400 hover:text-white hover:bg-[#222] rounded" title="Quote">
-                    <span className="text-xs">”</span>
+                    <span className="text-xs">"</span>
+                </button>
+                <button type="button" onClick={() => insertFormat("```javascript\n", "\n```")} className="p-1.5 text-gray-400 hover:text-white hover:bg-[#222] rounded font-mono" title="Code Block">
+                    <span className="text-xs font-bold">{ }</span>
                 </button>
                 <div className="w-px h-4 bg-[#1a1a1a] mx-1" />
                 <button type="button" onClick={() => insertFormat("![Alt Text](", ")")} className="p-1.5 text-gray-400 hover:text-white hover:bg-[#222] rounded" title="Image (URL)">
@@ -173,7 +180,7 @@ function MarkdownEditor({
       ) : (
         <div className="prose prose-invert max-w-none p-4 min-h-[300px] overflow-y-auto">
           {value ? (
-            <ReactMarkdown>{value}</ReactMarkdown>
+            <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight]}>{value}</ReactMarkdown>
           ) : (
              <p className="text-gray-500 italic">Nothing to preview</p>
           )}
@@ -287,6 +294,16 @@ export function ResourceForm({
                   value={formData[field.name] || ""}
                   onChange={(e) => handleChange(field.name, Number(e.target.value))}
                   className="w-full rounded-lg border border-[#1a1a1a] bg-[#111] px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                />
+              )}
+
+              {field.type === "date" && (
+                <input
+                  type="date"
+                  required={field.required}
+                  value={formData[field.name] ? new Date(formData[field.name]).toISOString().split('T')[0] : ""}
+                  onChange={(e) => handleChange(field.name, e.target.value ? new Date(e.target.value).toISOString() : null)}
+                  className="w-full rounded-lg border border-[#1a1a1a] bg-[#111] px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary [color-scheme:dark]"
                 />
               )}
 

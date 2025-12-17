@@ -2,40 +2,45 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Lock } from "lucide-react";
+import { Lock, Mail, Eye, EyeOff } from "lucide-react";
 
 export default function AdminLoginPage() {
-  const [key, setKey] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-
-    // Simple client-side cookie set (Validation happens in Layout/Middleware effectively)
-    // Ideally this should use a Server Action, but for simplicity/speed as requested:
-    // We set the cookie, and then the layout will verify if it matches the server env.
-    // Wait, client can't know the server env.
-    // So we need a simple server action or just a route to verify.
-    // Let's use a simple API route for verification or just server action.
-    // Actually, Server Action is easier in Next.js 14+.
+    setLoading(true);
 
     try {
-      const response = await fetch("/api/admin/verify", {
+      const response = await fetch("/api/admin/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ key }),
+        body: JSON.stringify({ email, password }),
+        credentials: "include", // Important for cookies
       });
 
+      const data = await response.json();
+
       if (response.ok) {
-        // Cookie is set by the API route on success
+        // Store access token in memory (not localStorage for security)
+        sessionStorage.setItem("accessToken", data.accessToken);
+        sessionStorage.setItem("adminUser", JSON.stringify(data.user));
+
+        // Redirect to admin dashboard
         router.push("/admin");
       } else {
-        setError("Invalid access key");
+        setError(data.error || "Login failed");
       }
     } catch (err) {
-      setError("Something went wrong");
+      setError("Network error. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -50,39 +55,114 @@ export default function AdminLoginPage() {
             Admin Access
           </h2>
           <p className="mt-2 text-sm text-gray-400">
-            Enter your secret key to continue
+            Sign in to your admin account
           </p>
         </div>
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div>
-            <label htmlFor="key" className="sr-only">
-              Access Key
-            </label>
-            <input
-              id="key"
-              name="key"
-              type="password"
-              required
-              className="relative block w-full rounded-lg border border-[#333] bg-[#111] p-3 text-white placeholder-gray-500 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary sm:text-sm"
-              placeholder="Enter access key..."
-              value={key}
-              onChange={(e) => setKey(e.target.value)}
-            />
+          <div className="space-y-4">
+            {/* Email Field */}
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+                Email Address
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Mail className="h-5 w-5 text-gray-500" />
+                </div>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  className="block w-full rounded-lg border border-[#333] bg-[#111] pl-10 pr-3 py-3 text-white placeholder-gray-500 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary sm:text-sm"
+                  placeholder="admin@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={loading}
+                />
+              </div>
+            </div>
+
+            {/* Password Field */}
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="current-password"
+                  required
+                  className="block w-full rounded-lg border border-[#333] bg-[#111] px-3 py-3 text-white placeholder-gray-500 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary sm:text-sm pr-10"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={loading}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-300"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
+                </button>
+              </div>
+            </div>
           </div>
 
           {error && (
-            <div className="text-sm text-red-500 text-center bg-red-500/10 p-2 rounded">
+            <div className="text-sm text-red-500 text-center bg-red-500/10 p-3 rounded-lg border border-red-500/20">
               {error}
             </div>
           )}
 
           <button
             type="submit"
-            className="group relative flex w-full justify-center rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-white hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-[#0a0a0a] transition-all"
+            disabled={loading}
+            className="group relative flex w-full justify-center rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-white hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-[#0a0a0a] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Unlock Dashboard
+            {loading ? (
+              <>
+                <svg
+                  className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                Signing in...
+              </>
+            ) : (
+              "Sign In"
+            )}
           </button>
+
+          <div className="text-center">
+            <p className="text-xs text-gray-500">
+              Protected by enterprise-grade security
+            </p>
+          </div>
         </form>
       </div>
     </div>
