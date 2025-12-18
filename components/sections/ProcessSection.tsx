@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Icon } from "../ui/Icon";
 import { motion } from "framer-motion";
 import type { ProcessStep } from "@/lib/types/portfolio";
-import { staggerContainer, fadeInUp, scaleIn } from "@/lib/animations";
+import { staggerContainer, fadeInUp } from "@/lib/animations";
 
 interface ProcessSectionProps {
   steps: ProcessStep[];
@@ -74,12 +74,12 @@ export function ProcessSection({ steps }: ProcessSectionProps) {
             />
           </div>
 
-          {/* Process Cards - Responsive Grid */}
-          <div className="grid gap-8 md:gap-6 relative z-10 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+          {/* Process Cards - Responsive Flex */}
+          <div className="flex flex-col lg:flex-row gap-8 relative z-10 justify-between items-start">
             {steps.map((step, index) => (
               <motion.div
                 key={step._id}
-                className="relative group"
+                className="relative group flex-1 w-full lg:w-auto flex flex-col items-center"
                 onMouseEnter={() => setActiveStep(step._id)}
                 onMouseLeave={() => setActiveStep(null)}
                 // Staggered slide in: Odd from top (-y), Even from bottom (y) or just fade up staggering
