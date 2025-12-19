@@ -19,12 +19,25 @@
   --color-background-dark: var(--background-dark);
   --color-surface-dark: var(--surface-dark);
   --color-secondary-dark: var(--secondary-dark);
+  --color-accent-blue: #4A9EFF;
+  --color-accent-green: #10B981;
+  --color-accent-amber: #F59E0B;
   --font-display: var(--font-sora);
   --font-body: var(--font-sora);
   --radius: 1rem;
   --radius-xl: 1rem;
   --radius-2xl: 1.5rem;
   --radius-3xl: 2rem;
+}
+
+@layer utilities {
+  .glass-panel {
+    @apply bg-[var(--color-surface-dark)]/40 backdrop-blur-md border border-[var(--color-foreground)]/10;
+  }
+  
+  .text-shadow-sm {
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  }
 }
 
 @media (prefers-color-scheme: dark) {

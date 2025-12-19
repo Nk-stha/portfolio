@@ -1,13 +1,17 @@
-import Image from "next/image";
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { format } from "date-fns";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import { connectToDatabase } from "@/lib/db/mongoose";
 import { BlogPost } from "@/lib/db/models";
-import { Icon } from "@/components/ui/Icon";
+import { ReadingProgressBar } from "@/components/blog/ReadingProgressBar";
+import { BlogHero } from "@/components/blog/BlogHero";
+import { BlogSidebar } from "@/components/blog/BlogSidebar";
+import { RelatedArticles } from "@/components/blog/RelatedArticles";
+import { ArticleNavigation } from "@/components/blog/ArticleNavigation";
+import { ScrollToTop } from "@/components/blog/ScrollToTop";
+import { CodeBlock } from "@/components/blog/CodeBlock";
+import { ZoomImage } from "@/components/blog/ZoomImage";
 
 export const dynamic = "force-dynamic";
 
@@ -19,12 +23,46 @@ async function getPost(slug: string) {
   await connectToDatabase();
   const post = await BlogPost.findOne({
     slug,
-    publishedAt: { $ne: null }, // Only show published
+    publishedAt: { $ne: null },
     deletedAt: null,
   }).lean();
 
   if (!post) return null;
   return JSON.parse(JSON.stringify(post));
+}
+
+async function getRelatedPosts(currentId: string, category: string) {
+  await connectToDatabase();
+  // Get 3 related posts by category, excluding current
+  const related = await BlogPost.find({
+    _id: { $ne: currentId },
+    category: category,
+    publishedAt: { $ne: null },
+    deletedAt: null,
+  })
+  .sort({ publishedAt: -1 })
+  .limit(3)
+  .lean();
+
+  // Get Next/Prev based on published date
+  const currentPost = await BlogPost.findById(currentId);
+  if (!currentPost) return { related: [], next: null, prev: null };
+
+  const next = await BlogPost.findOne({
+    publishedAt: { $gt: currentPost.publishedAt, $ne: null },
+    deletedAt: null
+  }).sort({ publishedAt: 1 }).select('slug title').lean();
+
+  const prev = await BlogPost.findOne({
+    publishedAt: { $lt: currentPost.publishedAt, $ne: null },
+    deletedAt: null
+  }).sort({ publishedAt: -1 }).select('slug title').lean();
+
+  return {
+    related: JSON.parse(JSON.stringify(related)),
+    next: next ? JSON.parse(JSON.stringify(next)) : null,
+    prev: prev ? JSON.parse(JSON.stringify(prev)) : null
+  };
 }
 
 export default async function BlogDetailPage({ params }: PageProps) {
@@ -35,85 +73,87 @@ export default async function BlogDetailPage({ params }: PageProps) {
     notFound();
   }
 
+  const { related, next, prev } = await getRelatedPosts(post._id, post.category);
+
+  // Estimate reading time (simple words/200)
+  const wordCount = post.content?.split(/\s+/g).length || 0;
+  const readingTime = `${Math.ceil(wordCount / 200)} min read`;
+
   return (
-    <article className="min-h-screen bg-[#0a0a0a] text-white pb-20">
-      {/* Hero Section */}
-      <div className="relative h-[60vh] min-h-[400px] w-full">
-        {post.featuredImage ? (
-           <Image
-             src={post.featuredImage}
-             alt={post.title}
-             fill
-             className="object-cover opacity-50"
-             priority
-           />
-        ) : (
-            <div className="absolute inset-0 bg-[#111]" />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/50 to-transparent" />
-        
-        <div className="absolute bottom-0 left-0 w-full p-4 sm:p-6 pb-12">
-            <div className="max-w-3xl mx-auto">
-                <Link 
-                    href="/blog"
-                    className="inline-flex items-center text-gray-400 hover:text-white mb-6 transition-colors text-sm group"
-                >
-                    <Icon name="arrow_back" size={16} className="mr-2 group-hover:-translate-x-1 transition-transform" />
-                    Back to Articles
-                </Link>
-                
-                <div className="flex flex-wrap items-center gap-4 text-sm text-primary mb-4 font-medium uppercase tracking-wider">
-                    <span className="bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
-                        {post.category}
-                    </span>
-                    {post.publishedAt && (
-                        <span className="flex items-center text-gray-300 normal-case tracking-normal">
-                             <Icon name="calendar_today" size={14} className="mr-2" />
-                             {format(new Date(post.publishedAt), "MMMM d, yyyy")}
-                        </span>
-                    )}
+    <article className="min-h-screen bg-[#0a0a0a] text-gray-300 pb-20 selection:bg-accent-blue/30 selection:text-accent-blue">
+      <ReadingProgressBar />
+      
+      <BlogHero 
+        title={post.title}
+        category={post.category}
+        publishedAt={post.publishedAt}
+        featuredImage={post.featuredImage}
+        author={post.author || { name: 'Admin' }}
+        readingTime={readingTime}
+      />
+
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 relative">
+        <div className="flex flex-col lg:flex-row gap-12 lg:gap-20">
+            {/* Main Content Column */}
+            <main className="flex-1 w-full min-w-0 pt-12">
+                <div className="prose prose-invert prose-lg max-w-[780px] mx-auto
+                    prose-headings:font-bold prose-headings:text-white prose-headings:scroll-mt-24
+                    prose-p:text-gray-300 prose-p:leading-8
+                    prose-a:text-accent-blue prose-a:no-underline hover:prose-a:underline
+                    prose-strong:text-white prose-strong:font-semibold
+                    prose-img:rounded-2xl prose-img:shadow-lg prose-img:border prose-img:border-white/10
+                    prose-li:text-gray-300
+                    prose-blockquote:border-l-accent-blue prose-blockquote:bg-white/5 prose-blockquote:py-2 prose-blockquote:px-6 prose-blockquote:rounded-r-lg prose-blockquote:not-italic
+                    prose-code:text-accent-blue prose-code:bg-accent-blue/10 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none
+                ">
+                  <ReactMarkdown 
+                        remarkPlugins={[remarkGfm]} 
+                        rehypePlugins={[rehypeHighlight]}
+                        components={{
+                            code: ({node, inline, className, children, ...props}: any) => (
+                                <CodeBlock inline={inline} className={className} {...props}>
+                                    {children}
+                                </CodeBlock>
+                            ),
+                            img: ({node, src, alt, ...props}) => (
+                                <ZoomImage src={(src as string) || ''} alt={alt || ''} />
+                            ),
+                            h2: ({node, children, ...props}) => {
+                                const id = getTextFromChildren(children).toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+                                return <h2 id={id} {...props}>{children}</h2>;
+                            },
+                            h3: ({node, children, ...props}) => {
+                                const id = getTextFromChildren(children).toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+                                return <h3 id={id} {...props}>{children}</h3>;
+                            },
+                        }}
+                    >
+                        {post.content}
+                    </ReactMarkdown>
                 </div>
 
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6">
-                    {post.title}
-                </h1>
+                <ArticleNavigation next={next} prev={prev} />
+                <RelatedArticles articles={related} />
+            </main>
 
-                <div className="flex items-center space-x-4">
-                    <div className="w-10 h-10 rounded-full bg-gray-800 relative overflow-hidden ring-2 ring-primary/20">
-                         {/* Author Avatar Placeholder */}
-                         <div className="absolute inset-0 bg-primary/20 flex items-center justify-center font-bold text-primary">
-                             {post.author?.name?.[0] || 'A'}
-                         </div>
-                    </div>
-                    <div>
-                        <p className="text-sm font-medium text-white">{post.author?.name || 'Admin'}</p>
-                        <p className="text-xs text-gray-400">Author</p>
-                    </div>
-                </div>
+            {/* Sidebar Column */}
+            <div className="hidden lg:block w-[300px] flex-shrink-0 pt-12">
+                <BlogSidebar />
             </div>
         </div>
       </div>
 
-      {/* Content */}
-      <div className="max-w-3xl mx-auto px-4 sm:px-6">
-          <div className="prose prose-invert prose-lg max-w-none prose-headings:font-bold prose-headings:text-white prose-p:text-gray-300 prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-img:rounded-xl prose-strong:text-white prose-code:text-primary prose-pre:bg-[#111] prose-pre:border prose-pre:border-[#222]">
-            <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight]}>{post.content}</ReactMarkdown>
-         </div>
-         
-         {/* Footer / Share / Tags could go here */}
-         <div className="mt-16 pt-8 border-t border-[#1a1a1a] flex justify-between items-center">
-             <Link 
-                href="/blog"
-                className="text-gray-400 hover:text-white transition-colors text-sm font-medium"
-             >
-                 ← More Articles
-             </Link>
-             {/* Simple Scroll to top substitute */}
-             <a href="#" className="text-gray-400 hover:text-primary transition-colors">
-                 <Icon name="arrow_upward" />
-             </a>
-         </div>
-      </div>
+      <ScrollToTop />
     </article>
   );
+}
+
+function getTextFromChildren(children: React.ReactNode): string {
+  if (typeof children === 'string') return children;
+  if (typeof children === 'number') return children.toString();
+  if (Array.isArray(children)) return children.map(getTextFromChildren).join('');
+  if (/* React Element */ typeof children === 'object' && children !== null && 'props' in children) {
+     return getTextFromChildren((children as any).props.children);
+  }
+  return '';
 }
