@@ -28,9 +28,24 @@ export function Sidebar() {
     { name: "Profile", href: "/admin/profile", icon: User },
   ];
 
-  const handleLogout = () => {
-    document.cookie = "admin_key=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
-    window.location.href = "/admin/login";
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("/api/admin/auth/logout", {
+        method: "POST",
+      });
+
+      // If response is not ok, check if it's a 400 (no session)
+      // If it's 400, we can proceed to redirect as we are effectively logged out
+      // For other errors (500), we throw to prevent redirecting with an active session
+      if (!response.ok && response.status !== 400) {
+        throw new Error("Logout failed");
+      }
+
+      window.location.href = "/admin/login";
+    } catch (error) {
+      console.error("Logout failed:", error);
+      alert("Failed to logout. Please try again.");
+    }
   };
 
   return (

@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
         // Log logout
         if (decoded) {
             await AuditLog.create({
-                action: "LOGIN",
+                action: "LOGOUT",
                 targetCollection: "admin_auth",
                 documentId: decoded.adminId,
                 userId: decoded.adminId,

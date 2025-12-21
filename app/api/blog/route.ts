@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/db/mongoose";
-import { BlogPost } from "@/lib/db/models";
+import { BlogPost, AdminUser } from "@/lib/db/models";
 import { logActivity } from "@/lib/utils/audit-logger";
+import { requireAuth } from "@/lib/middleware/auth.middleware";
 
 export async function GET(request: NextRequest) {
     try {
@@ -42,9 +43,16 @@ export async function GET(request: NextRequest) {
     }
 }
 
+
 export async function POST(request: NextRequest) {
     try {
         await connectToDatabase();
+
+        // 1. Authorization check
+        const authResult = await requireAuth(request);
+        if (!authResult.isAuthorized || !authResult.adminId) {
+            return authResult.response || NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
 
         const body = await request.json();
 
@@ -65,17 +73,30 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const post = await BlogPost.create({
+        // Fetch valid author details
+        const adminUser = await AdminUser.findById(authResult.adminId);
+        if (!adminUser) {
+            return NextResponse.json(
+                { error: "Author profile not found" },
+                { status: 404 }
+            );
+        }
+
+        const post = new BlogPost({
             ...body,
-            author: body.author || { name: "Rohan Shrestha", avatar: "/animatedprofile.png" },
+            author: {
+                name: adminUser.name,
+                avatar: "/animatedprofile.png"
+            },
         });
+        await post.save();
 
         await logActivity({
             action: "CREATE",
             targetCollection: "blog_posts",
-            documentId: (post as any)._id,
-            userEmail: "admin@portfolio.local", // Placeholder as no auth system detected
-            changes: { after: (post as any).toObject() },
+            documentId: post._id.toString(),
+            userEmail: adminUser.email,
+            changes: { after: post.toObject() },
             req: request,
         });
 
