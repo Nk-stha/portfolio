@@ -30,21 +30,31 @@ export async function POST(request: NextRequest) {
         const decoded = verifyRefreshToken(refreshTokenCookie);
 
         // Revoke the refresh token in database
+        console.log("Revoking refresh token in DB...");
         const result = await RefreshToken.updateOne(
             { token: refreshTokenCookie },
             { $set: { isRevoked: true } }
         );
+        console.log("RefreshToken update result:", result);
 
         // Log logout
         if (decoded) {
-            await AuditLog.create({
-                action: "LOGOUT",
-                targetCollection: "admin_auth",
-                documentId: decoded.adminId,
-                userId: decoded.adminId,
-                userEmail: decoded.email,
-                changes: { ipAddress, tokensRevoked: result.modifiedCount, userName: decoded.email },
-            });
+            console.log("Creating AuditLog for user:", decoded.adminId);
+
+            try {
+                await AuditLog.create({
+                    action: "LOGOUT",
+                    targetCollection: "admin_auth",
+                    documentId: decoded.adminId,
+                    userId: decoded.adminId,
+                    userEmail: decoded.email,
+                    changes: { ipAddress, tokensRevoked: result.modifiedCount, userName: decoded.email },
+                });
+                console.log("AuditLog created successfully");
+            } catch (auditError) {
+                console.error("AuditLog creation failed (non-fatal)");
+                // Don't fail the request just because logging failed, but log it
+            }
         }
 
         // Clear cookies
@@ -63,10 +73,15 @@ export async function POST(request: NextRequest) {
 
         return response;
     } catch (error) {
-        console.error("Logout error:", error);
+        console.error("Logout error occurred");
+
+        // Return more specific error in dev only
+        const errorMessage = process.env.NODE_ENV === 'development' && error instanceof Error
+            ? error.message
+            : "An error occurred during logout";
 
         return NextResponse.json(
-            { error: "An error occurred during logout" },
+            { error: errorMessage },
             { status: 500 }
         );
     }

@@ -2,7 +2,7 @@ import mongoose, { Schema, Document, Model, Types } from "mongoose";
 
 // TypeScript interface
 export interface IAuditLog extends Document {
-    action: "CREATE" | "UPDATE" | "DELETE" | "LOGIN";
+    action: "CREATE" | "UPDATE" | "DELETE" | "LOGIN" | "LOGOUT";
     targetCollection: string;
     documentId?: Types.ObjectId; // Made optional
     userId: Types.ObjectId | null;
@@ -18,7 +18,7 @@ const AuditLogSchema = new Schema<IAuditLog>(
     {
         action: {
             type: String,
-            enum: ["CREATE", "UPDATE", "DELETE", "LOGIN"],
+            enum: ["CREATE", "UPDATE", "DELETE", "LOGIN", "LOGOUT"],
             required: true,
         },
         targetCollection: { type: String, required: true },
