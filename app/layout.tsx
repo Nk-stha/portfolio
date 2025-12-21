@@ -5,6 +5,7 @@ import "highlight.js/styles/github-dark.css";
 import { Analytics } from "@vercel/analytics/next";
 import NextTopLoader from 'nextjs-toploader';
 import { JsonLd } from '@/components/seo/JsonLd';
+import Script from 'next/script';
 
 const sora = Sora({
   variable: "--font-sora",
@@ -112,6 +113,19 @@ export default function RootLayout({
       </head>
       <body className={`${sora.variable} antialiased`}>
         <NextTopLoader color="#FF5722" showSpinner={false} />
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-Y70EJR6LKD"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-Y70EJR6LKD');
+          `}
+        </Script>
         <JsonLd
           data={{
             "@context": "https://schema.org",
