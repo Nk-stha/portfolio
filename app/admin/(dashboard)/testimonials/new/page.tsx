@@ -1,6 +1,7 @@
 "use client";
 
 import { ResourceForm } from "@/components/admin/ResourceForm";
+import { authenticatedFetch } from "@/lib/client/auth-client";
 
 export default function NewTestimonialPage() {
   const fields = [
@@ -29,7 +30,7 @@ export default function NewTestimonialPage() {
       isActive: data.isActive,
     };
 
-    const res = await fetch("/api/testimonials", {
+    const res = await authenticatedFetch("/api/testimonials", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),

@@ -1,6 +1,7 @@
 "use client";
 
 import { ResourceForm } from "@/components/admin/ResourceForm";
+import { authenticatedFetch } from "@/lib/client/auth-client";
 
 export default function EditProjectForm({ project }: { project: any }) {
   const fields = [
@@ -29,7 +30,7 @@ export default function EditProjectForm({ project }: { project: any }) {
     
     delete payload._id;
 
-    const res = await fetch(`/api/projects/${project._id}`, {
+    const res = await authenticatedFetch(`/api/projects/${project._id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),

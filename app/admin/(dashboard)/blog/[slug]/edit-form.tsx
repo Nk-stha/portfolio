@@ -1,6 +1,7 @@
 "use client";
 
 import { ResourceForm } from "@/components/admin/ResourceForm";
+import { authenticatedFetch } from "@/lib/client/auth-client";
 
 export default function EditBlogForm({ post }: { post: any }) {
   const fields = [
@@ -33,7 +34,7 @@ export default function EditBlogForm({ post }: { post: any }) {
     delete payload.slug;
     delete payload._id;
 
-    const res = await fetch(`/api/blog/${post.slug}`, {
+    const res = await authenticatedFetch(`/api/blog/${post.slug}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),

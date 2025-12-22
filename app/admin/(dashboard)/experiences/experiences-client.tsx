@@ -2,6 +2,7 @@
 
 import { DataTable } from "@/components/admin/DataTable";
 import { useRouter } from "next/navigation";
+import { authenticatedFetch } from "@/lib/client/auth-client";
 
 interface Experience {
   _id: string;
@@ -15,7 +16,7 @@ export function ExperiencesClient({ initialData }: { initialData: Experience[] }
   const router = useRouter();
 
   const handleDelete = async (row: Experience) => {
-    const res = await fetch(`/api/experiences/${row._id}`, {
+    const res = await authenticatedFetch(`/api/experiences/${row._id}`, {
       method: "DELETE",
     });
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { ResourceForm } from "@/components/admin/ResourceForm";
+import { authenticatedFetch } from "@/lib/client/auth-client";
 
 export default function NewExperiencePage() {
   const fields = [
@@ -15,7 +16,7 @@ export default function NewExperiencePage() {
   ];
 
   const handleSubmit = async (data: any) => {
-    const res = await fetch("/api/experiences", {
+    const res = await authenticatedFetch("/api/experiences", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),

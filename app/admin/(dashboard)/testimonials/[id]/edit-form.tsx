@@ -1,6 +1,7 @@
 "use client";
 
 import { ResourceForm } from "@/components/admin/ResourceForm";
+import { authenticatedFetch } from "@/lib/client/auth-client";
 
 export default function EditTestimonialForm({ initialData }: { initialData: any }) {
   const fields = [
@@ -40,7 +41,7 @@ export default function EditTestimonialForm({ initialData }: { initialData: any 
       order: data.order,
     };
 
-    const res = await fetch(`/api/testimonials/${initialData._id}`, {
+    const res = await authenticatedFetch(`/api/testimonials/${initialData._id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),

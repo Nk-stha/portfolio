@@ -2,6 +2,7 @@
 
 import { ResourceForm } from "@/components/admin/ResourceForm";
 import { useRouter } from "next/navigation";
+import { authenticatedFetch } from "@/lib/client/auth-client";
 
 export function ProfileForm({ initialData }: { initialData: any }) {
   const router = useRouter();
@@ -38,7 +39,7 @@ export function ProfileForm({ initialData }: { initialData: any }) {
         seo: initialData.seo || {}
     };
 
-    const res = await fetch("/api/profile", {
+    const res = await authenticatedFetch("/api/profile", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),

@@ -3,6 +3,7 @@
 import { DataTable } from "@/components/admin/DataTable";
 import { CheckCircle, XCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { authenticatedFetch } from "@/lib/client/auth-client";
 
 interface Testimonial {
   _id: string;
@@ -17,7 +18,7 @@ export function TestimonialsClient({ initialData }: { initialData: Testimonial[]
   const router = useRouter();
 
   const handleDelete = async (row: Testimonial) => {
-    const res = await fetch(`/api/testimonials/${row._id}`, {
+    const res = await authenticatedFetch(`/api/testimonials/${row._id}`, {
       method: "DELETE",
     });
 

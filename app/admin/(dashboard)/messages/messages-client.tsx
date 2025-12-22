@@ -2,6 +2,7 @@
 
 import { DataTable } from "@/components/admin/DataTable";
 import { useRouter } from "next/navigation";
+import { authenticatedFetch } from "@/lib/client/auth-client";
 import { format } from "date-fns";
 
 interface Message {
@@ -17,7 +18,7 @@ export function MessagesClient({ initialData }: { initialData: Message[] }) {
   const router = useRouter();
 
   const handleDelete = async (row: Message) => {
-    const res = await fetch(`/api/contact/${row._id}`, {
+    const res = await authenticatedFetch(`/api/contact/${row._id}`, {
       method: "DELETE",
     });
 

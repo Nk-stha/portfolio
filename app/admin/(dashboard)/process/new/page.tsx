@@ -2,6 +2,7 @@
 
 import { ResourceForm } from "@/components/admin/ResourceForm";
 import { useRouter } from "next/navigation";
+import { authenticatedFetch } from "@/lib/client/auth-client";
 
 export default function NewProcessPage() {
   const router = useRouter();
@@ -13,7 +14,7 @@ export default function NewProcessPage() {
       items: data.items.split('\n').filter((item: string) => item.trim() !== '')
     };
 
-    const res = await fetch("/api/process", {
+    const res = await authenticatedFetch("/api/process", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formattedData),

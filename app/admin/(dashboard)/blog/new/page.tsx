@@ -1,6 +1,7 @@
 "use client";
 
 import { ResourceForm } from "@/components/admin/ResourceForm";
+import { authenticatedFetch } from "@/lib/client/auth-client";
 
 export default function NewBlogPostPage() {
   const fields = [
@@ -21,7 +22,7 @@ export default function NewBlogPostPage() {
         publishedAt: data.publishedAt ? new Date(data.publishedAt).toISOString() : new Date().toISOString()
     };
 
-    const res = await fetch("/api/blog", {
+    const res = await authenticatedFetch("/api/blog", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),

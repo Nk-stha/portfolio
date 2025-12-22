@@ -1,6 +1,7 @@
 "use client";
 
 import { ResourceForm } from "@/components/admin/ResourceForm";
+import { authenticatedFetch } from "@/lib/client/auth-client";
 
 export default function NewProjectPage() {
   const fields = [
@@ -21,7 +22,7 @@ export default function NewProjectPage() {
         technologies: data.technologies.split(",").map((t: string) => t.trim()).filter(Boolean)
     };
 
-    const res = await fetch("/api/projects", {
+    const res = await authenticatedFetch("/api/projects", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),

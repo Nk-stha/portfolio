@@ -2,6 +2,7 @@
 
 import { ResourceForm } from "@/components/admin/ResourceForm";
 import { useRouter } from "next/navigation";
+import { authenticatedFetch } from "@/lib/client/auth-client";
 
 interface ProcessStep {
   _id: string;
@@ -22,7 +23,7 @@ export function EditProcessForm({ initialData }: { initialData: ProcessStep }) {
       items: data.items.split('\n').filter((item: string) => item.trim() !== '')
     };
 
-    const res = await fetch(`/api/process/${initialData._id}`, {
+    const res = await authenticatedFetch(`/api/process/${initialData._id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formattedData),

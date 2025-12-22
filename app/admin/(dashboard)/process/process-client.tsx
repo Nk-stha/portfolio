@@ -2,6 +2,7 @@
 
 import { DataTable } from "@/components/admin/DataTable";
 import { useRouter } from "next/navigation";
+import { authenticatedFetch } from "@/lib/client/auth-client";
 import { Icon } from "@/components/ui/Icon";
 
 interface ProcessStep {
@@ -15,7 +16,7 @@ export function ProcessClient({ initialData }: { initialData: ProcessStep[] }) {
   const router = useRouter();
 
   const handleDelete = async (row: ProcessStep) => {
-    const res = await fetch(`/api/process/${row._id}`, {
+    const res = await authenticatedFetch(`/api/process/${row._id}`, {
       method: "DELETE",
     });
 
