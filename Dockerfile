@@ -14,13 +14,9 @@ RUN npm ci
 # Copy the rest of the application code
 COPY . .
 
-# Build arguments for environment variables needed at build time
-ARG MONGODB_URI
-
 # Set environment variables for build
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
-ENV MONGODB_URI=${MONGODB_URI}
 
 # Build the Next.js application
 RUN npm run build

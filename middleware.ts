@@ -33,13 +33,17 @@ export async function middleware(request: NextRequest) {
         try {
             const refreshSecret = process.env.JWT_REFRESH_SECRET;
             if (!refreshSecret) {
-                throw new Error('JWT_REFRESH_SECRET is not defined');
+                console.error('CRITICAL: JWT_REFRESH_SECRET is not defined in environment variables');
+                return NextResponse.json(
+                    { error: 'Internal Server Error - Security configuration missing' },
+                    { status: 500 }
+                );
             }
             const secret = new TextEncoder().encode(refreshSecret);
             await jwtVerify(refreshToken, secret);
             return NextResponse.next();
         } catch (error) {
-            // Cookie invalid/expired or secret missing
+            // Token is invalid or expired
             return NextResponse.redirect(new URL('/admin/login', request.url));
         }
     }
@@ -60,7 +64,11 @@ export async function middleware(request: NextRequest) {
         try {
             const accessSecret = process.env.JWT_ACCESS_SECRET;
             if (!accessSecret) {
-                throw new Error('JWT_ACCESS_SECRET is not defined');
+                console.error('CRITICAL: JWT_ACCESS_SECRET is not defined in environment variables');
+                return NextResponse.json(
+                    { error: 'Internal Server Error - Security configuration missing' },
+                    { status: 500 }
+                );
             }
             const secret = new TextEncoder().encode(accessSecret);
             await jwtVerify(token, secret);

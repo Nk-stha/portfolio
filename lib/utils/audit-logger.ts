@@ -50,7 +50,7 @@ export async function logActivity({
             userAgent,
         });
     } catch (error) {
-        // Fail silently to not block the main request, but log to console
-        console.error("Failed to create audit log:", error);
+        // Fail silently to not block the main request
+        // console.error("Audit log failed");
     }
 }

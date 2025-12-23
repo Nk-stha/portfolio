@@ -64,7 +64,7 @@ export function TableOfContents() {
   if (headings.length === 0) return null;
 
   return (
-    <nav className="space-y-4">
+    <nav className="space-y-4" aria-label="Table of contents">
       <h4 className="text-sm font-bold uppercase tracking-wider text-gray-400 mb-4">
         Table of Contents
       </h4>
@@ -82,14 +82,26 @@ export function TableOfContents() {
                 )}
               <a 
                 href={`#${heading.id}`}
+                aria-current={activeId === heading.id ? "location" : undefined}
                 onClick={(e) => {
                   e.preventDefault();
-                  document.getElementById(heading.id)?.scrollIntoView({
-                    behavior: "smooth"
-                  });
+                  const element = document.getElementById(heading.id);
+                  if (element) {
+                    const offset = 100; // Account for sticky header
+                    const bodyRect = document.body.getBoundingClientRect().top;
+                    const elementRect = element.getBoundingClientRect().top;
+                    const elementPosition = elementRect - bodyRect;
+                    const offsetPosition = elementPosition - offset;
+
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: "smooth"
+                    });
+                  }
                   setActiveId(heading.id);
+                  window.history.pushState(null, '', `#${heading.id}`);
                 }}
-                className={`block text-sm py-2 pr-4 transition-colors duration-200 ${
+                className={`block text-sm py-2 pr-4 transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-accent-blue focus-visible:outline-offset-2 ${
                     activeId === heading.id ? "text-accent-blue font-medium" : "text-gray-400 hover:text-white"
                 }`}
                 style={{ paddingLeft: heading.level === 3 ? "1rem" : "0" }}

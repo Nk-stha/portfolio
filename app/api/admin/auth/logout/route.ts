@@ -24,10 +24,10 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        await connectToDatabase();
-
         // Decode token to get admin info (even if expired)
         const decoded = verifyRefreshToken(refreshTokenCookie);
+
+        await connectToDatabase();
 
         // Revoke the refresh token in database
         console.log("Revoking refresh token in DB...");

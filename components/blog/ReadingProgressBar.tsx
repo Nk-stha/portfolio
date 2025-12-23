@@ -1,14 +1,20 @@
 "use client";
 
-import { motion, useScroll, useSpring } from "framer-motion";
+import { useState } from "react";
+import { motion, useScroll, useSpring, useMotionValueEvent } from "framer-motion";
 
 export function ReadingProgressBar() {
   const { scrollYProgress } = useScroll();
+  const [progress, setProgress] = useState(0);
   
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 100,
     damping: 30,
     restDelta: 0.001
+  });
+
+  useMotionValueEvent(scrollYProgress, "change", (latest) => {
+    setProgress(Math.round(latest * 100));
   });
 
   return (
@@ -18,6 +24,7 @@ export function ReadingProgressBar() {
       role="progressbar"
       aria-valuemin={0}
       aria-valuemax={100}
+      aria-valuenow={progress}
       aria-label="Reading progress"
     />
   );

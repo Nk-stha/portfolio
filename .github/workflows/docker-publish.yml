@@ -27,8 +27,8 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO }}:latest
-          # Pass build args if your Next.js build requires them
+          # MONGODB_URI removed from build-args for security. Pass at runtime instead.
           build-args: |
-            MONGODB_URI=${{ secrets.MONGODB_URI }}
+            # Add other non-sensitive build args here if needed
           cache-from: type=gha
           cache-to: type=gha,mode=max

@@ -37,6 +37,13 @@ export async function POST(request: NextRequest) {
     try {
         await connectToDatabase();
 
+        /**
+         * NOTE: This POST endpoint is explicitly excluded from Bearer token protection in middleware.ts
+         * to allow public users to submit contact forms. 
+         * Security measures include:
+         * - IP-based audit logging
+         * - Future: Consider adding rate-limiting and reCAPTCHA here.
+         */
         const body = await request.json();
         const { email, name, message, source = "contact_form" } = body;
 

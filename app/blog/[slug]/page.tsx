@@ -48,13 +48,14 @@ async function getRelatedPosts(currentId: string, category: string) {
   const currentPost = await BlogPost.findById(currentId);
   if (!currentPost) return { related: [], next: null, prev: null };
 
+  const now = new Date();
   const next = await BlogPost.findOne({
-    publishedAt: { $gt: currentPost.publishedAt, $ne: null },
+    publishedAt: { $gt: currentPost.publishedAt, $lte: now },
     deletedAt: null
   }).sort({ publishedAt: 1 }).select('slug title').lean();
 
   const prev = await BlogPost.findOne({
-    publishedAt: { $lt: currentPost.publishedAt, $ne: null },
+    publishedAt: { $lt: currentPost.publishedAt, $lte: now },
     deletedAt: null
   }).sort({ publishedAt: -1 }).select('slug title').lean();
 

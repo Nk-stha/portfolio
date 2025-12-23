@@ -88,17 +88,21 @@ export function CodeBlock({ className, children, inline, ...props }: CodeBlockPr
         <pre className="!bg-[#1e1e1e] !m-0 !p-4 overflow-x-auto">
           <code 
             ref={codeRef}
-            className={`${className} ${lineCount > 10 ? 'grid grid-cols-[auto_1fr] gap-4' : 'block'}`} 
+            className={`${className} ${lineCount > 10 ? 'grid grid-cols-[auto_1fr]' : 'block'}`} 
             {...props}
           >
              {content.split('\n').map((line, i) => (
                 <React.Fragment key={i}>
-                    {lineCount > 10 && (
-                        <span className="text-gray-600 text-right select-none text-xs leading-6 min-w-[24px]">
-                            {i + 1}
-                        </span>
+                    {lineCount > 10 ? (
+                        <>
+                            <span className="text-gray-600 text-right select-none text-xs leading-6 min-w-[24px] pr-4 border-r border-white/5 mr-4">
+                                {i + 1}
+                            </span>
+                            <span className="leading-6">{line || " "}</span>
+                        </>
+                    ) : (
+                        <span className="leading-6 block">{line || " "}</span>
                     )}
-                    <span className="leading-6">{line}</span>
                 </React.Fragment>
              ))}
           </code>
