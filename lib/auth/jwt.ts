@@ -1,13 +1,19 @@
 import jwt from "jsonwebtoken";
 
-const ACCESS_SECRET = process.env.JWT_ACCESS_SECRET!;
-const REFRESH_SECRET = process.env.JWT_REFRESH_SECRET!;
+const getAccessSecret = () => {
+    const secret = process.env.JWT_ACCESS_SECRET;
+    if (!secret) throw new Error("JWT_ACCESS_SECRET is not defined");
+    return secret;
+};
+
+const getRefreshSecret = () => {
+    const secret = process.env.JWT_REFRESH_SECRET;
+    if (!secret) throw new Error("JWT_REFRESH_SECRET is not defined");
+    return secret;
+};
+
 const ACCESS_EXPIRY = process.env.JWT_ACCESS_EXPIRY || "15m";
 const REFRESH_EXPIRY = process.env.JWT_REFRESH_EXPIRY || "7d";
-
-if (!ACCESS_SECRET || !REFRESH_SECRET) {
-    throw new Error("JWT secrets are not defined in environment variables");
-}
 
 export interface TokenPayload {
     adminId: string;
@@ -19,7 +25,7 @@ export interface TokenPayload {
  * Generate an access token (short-lived)
  */
 export function generateAccessToken(payload: TokenPayload): string {
-    return jwt.sign(payload, ACCESS_SECRET, {
+    return jwt.sign(payload, getAccessSecret(), {
         expiresIn: ACCESS_EXPIRY as any,
         issuer: "portfolio-admin",
         audience: "portfolio-admin",
@@ -30,7 +36,7 @@ export function generateAccessToken(payload: TokenPayload): string {
  * Generate a refresh token (long-lived)
  */
 export function generateRefreshToken(payload: TokenPayload): string {
-    return jwt.sign(payload, REFRESH_SECRET, {
+    return jwt.sign(payload, getRefreshSecret(), {
         expiresIn: REFRESH_EXPIRY as any,
         issuer: "portfolio-admin",
         audience: "portfolio-admin",
@@ -42,7 +48,7 @@ export function generateRefreshToken(payload: TokenPayload): string {
  */
 export function verifyAccessToken(token: string): TokenPayload | null {
     try {
-        const decoded = jwt.verify(token, ACCESS_SECRET, {
+        const decoded = jwt.verify(token, getAccessSecret(), {
             issuer: "portfolio-admin",
             audience: "portfolio-admin",
         }) as TokenPayload;
@@ -57,7 +63,7 @@ export function verifyAccessToken(token: string): TokenPayload | null {
  */
 export function verifyRefreshToken(token: string): TokenPayload | null {
     try {
-        const decoded = jwt.verify(token, REFRESH_SECRET, {
+        const decoded = jwt.verify(token, getRefreshSecret(), {
             issuer: "portfolio-admin",
             audience: "portfolio-admin",
         }) as TokenPayload;
