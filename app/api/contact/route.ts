@@ -2,16 +2,22 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/db/mongoose";
 import { ContactSubmission } from "@/lib/db/models";
 import { logActivity } from "@/lib/utils/audit-logger";
-
+import { requireAuth } from "@/lib/middleware/auth.middleware";
 // Simple email validation
 function isValidEmail(email: string): boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
     try {
         await connectToDatabase();
+
+        // 1. Authorization check
+        const authResult = await requireAuth(request);
+        if (!authResult.isAuthorized) {
+            return authResult.response || NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
 
         const submissions = await ContactSubmission.find()
             .sort({ createdAt: -1 })

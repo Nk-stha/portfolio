@@ -5,8 +5,9 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { Button } from "../ui/Button";
 import { Icon } from "../ui/Icon";
+import { SectionContainer } from "../ui/SectionContainer";
 import type { Profile } from "@/lib/types/portfolio";
-import { fadeInUp, fadeIn, scaleIn, staggerContainer, hoverGlow, EASE_BOUNCE } from "@/lib/animations";
+import { fadeInUp, fadeIn, scaleIn, staggerContainer, hoverGlow } from "@/lib/animations";
 
 interface HeroSectionProps {
   profile: Profile | null;
@@ -23,9 +24,13 @@ export function HeroSection({ profile }: HeroSectionProps) {
   const avatarUrl = profile?.avatarUrl || "/animatedprofile.png";
 
   return (
-    <section className="pt-28 md:pt-40 relative overflow-hidden bg-white dark:bg-background-dark">
+    <SectionContainer 
+      id="hero" 
+      backgroundColor="light" 
+      className="pt-28 md:pt-40 relative overflow-hidden"
+    >
       <motion.div 
-        className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10 text-center"
+        className="relative z-10 text-center"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: "-100px" }}
@@ -163,6 +168,6 @@ export function HeroSection({ profile }: HeroSectionProps) {
           </div>
         </div>
       </motion.div>
-    </section>
+    </SectionContainer>
   );
 }

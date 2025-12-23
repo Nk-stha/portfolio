@@ -1,33 +1,18 @@
 # ==============================================================================
-# Stage 1: Dependencies
-# ==============================================================================
-FROM node:22-alpine AS deps
-
-# Install libc6-compat for Alpine compatibility
-RUN apk add --no-cache libc6-compat
-
-WORKDIR /app
-
-# Copy package files for dependency installation
-COPY package.json package-lock.json* ./
-
-# Install dependencies using npm ci for reproducible builds
-# This layer is cached unless package files change
-RUN npm ci --only=production && npm cache clean --force
-
-# ==============================================================================
 # Stage 2: Builder
 # ==============================================================================
 FROM node:22-alpine AS builder
 
 WORKDIR /app
 
-# Copy dependencies from deps stage
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+# Copy dependency definitions
+COPY package.json package-lock.json* ./
 
 # Install all dependencies (including devDependencies for build)
 RUN npm ci
+
+# Copy the rest of the application code
+COPY . .
 
 # Build arguments for environment variables needed at build time
 ARG MONGODB_URI

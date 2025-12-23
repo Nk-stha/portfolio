@@ -1,6 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import { Button } from "../ui/Button";
+import { SectionContainer } from "../ui/SectionContainer";
 import type { Profile } from "@/lib/types/portfolio";
 
 interface AboutSectionProps {
@@ -15,9 +16,8 @@ export function AboutSection({ profile }: AboutSectionProps) {
   const stats = profile?.about?.stats || [];
 
   return (
-    <section className="py-20 bg-gray-50 dark:bg-[#1A1A1A]">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="flex flex-col md:flex-row items-center gap-12">
+    <SectionContainer id="about" backgroundColor="gray">
+      <div className="flex flex-col md:flex-row items-center gap-12">
           {/* Left - Image */}
           <div className="w-full md:w-1/2 relative">
             <div className="aspect-square bg-primary rounded-full relative overflow-hidden">
@@ -69,7 +69,6 @@ export function AboutSection({ profile }: AboutSectionProps) {
             </Button>
           </div>
         </div>
-      </div>
-    </section>
+    </SectionContainer>
   );
 }

@@ -14,7 +14,7 @@ export async function middleware(request: NextRequest) {
     const isLoginPage = pathname.startsWith('/admin/login');
 
     // Public API Write Protection
-    const isPublicApiWrite = pathname.startsWith('/api/') && !isAdminApi && ['POST', 'PUT', 'DELETE', 'PATCH'].includes(request.method);
+    const isPublicApiWrite = pathname.startsWith('/api/') && !isAdminApi && !pathname.startsWith('/api/contact') && ['POST', 'PUT', 'DELETE', 'PATCH'].includes(request.method);
 
     // --- 1. Skip Open Routes ---
     if (isAuthApi || isLoginPage) {
