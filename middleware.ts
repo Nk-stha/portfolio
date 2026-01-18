@@ -50,35 +50,62 @@ export async function middleware(request: NextRequest) {
 
     // --- 3. Protect API Routes ---
     // Checks for Bearer Token (preferred) logic
+    // --- 3. Protect API Routes ---
+    // Checks for Bearer Token (preferred) OR Cookie (fallback for internal tools)
     if (isAdminApi || isPublicApiWrite) {
         const authHeader = request.headers.get('authorization');
         const token = authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null;
 
-        if (!token) {
-            return NextResponse.json(
-                { error: 'Unauthorized - No token provided' },
-                { status: 401 }
-            );
-        }
-
-        try {
-            const accessSecret = process.env.JWT_ACCESS_SECRET;
-            if (!accessSecret) {
-                console.error('CRITICAL: JWT_ACCESS_SECRET is not defined in environment variables');
+        // Scenario A: Bearer Token provided (standard API usage)
+        if (token) {
+            try {
+                const accessSecret = process.env.JWT_ACCESS_SECRET;
+                if (!accessSecret) {
+                    console.error('CRITICAL: JWT_ACCESS_SECRET is not defined in environment variables');
+                    return NextResponse.json(
+                        { error: 'Internal Server Error - Security configuration missing' },
+                        { status: 500 }
+                    );
+                }
+                const secret = new TextEncoder().encode(accessSecret);
+                await jwtVerify(token, secret);
+                return NextResponse.next();
+            } catch (error) {
                 return NextResponse.json(
-                    { error: 'Internal Server Error - Security configuration missing' },
-                    { status: 500 }
+                    { error: 'Unauthorized - Invalid or expired token' },
+                    { status: 401 }
                 );
             }
-            const secret = new TextEncoder().encode(accessSecret);
-            await jwtVerify(token, secret);
-            return NextResponse.next();
-        } catch (error) {
-            return NextResponse.json(
-                { error: 'Unauthorized - Invalid or expired token' },
-                { status: 401 }
-            );
         }
+
+        // Scenario B: No Bearer Token, check for Cookie (Browser/Admin Panel usage)
+        const refreshToken = request.cookies.get('refreshToken')?.value;
+        if (refreshToken) {
+            try {
+                const refreshSecret = process.env.JWT_REFRESH_SECRET;
+                if (!refreshSecret) {
+                    console.error('CRITICAL: JWT_REFRESH_SECRET is not defined in environment variables');
+                    return NextResponse.json(
+                        { error: 'Internal Server Error - Security configuration missing' },
+                        { status: 500 }
+                    );
+                }
+                const secret = new TextEncoder().encode(refreshSecret);
+                await jwtVerify(refreshToken, secret);
+                return NextResponse.next();
+            } catch (error) {
+                return NextResponse.json(
+                    { error: 'Unauthorized - Invalid or expired cookie session' },
+                    { status: 401 }
+                );
+            }
+        }
+
+        // Scenario C: Neither provided
+        return NextResponse.json(
+            { error: 'Unauthorized - No authentication provided' },
+            { status: 401 }
+        );
     }
 
     return NextResponse.next();

@@ -34,7 +34,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        MONGODB_URI: ${MONGODB_URI}
+        MONGODB_URI: ${MONGODB_URI_PROD}
     container_name: portfolio-app
     restart: unless-stopped
     env_file:

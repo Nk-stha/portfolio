@@ -9,13 +9,20 @@ declare global {
 }
 
 const getMongoUri = () => {
-    const uri = process.env.MONGODB_URI;
-    if (!uri) {
-        throw new Error(
-            "Please define the MONGODB_URI environment variable inside .env.local"
-        );
+    if (process.env.NODE_ENV === "production") {
+        const prodUri = process.env.MONGODB_URI_PROD || process.env.MONGODB_URI;
+        if (!prodUri) {
+            throw new Error("Please define MONGODB_URI_PROD or MONGODB_URI environment variable");
+        }
+        return prodUri;
     }
-    return uri;
+
+    // Default to Development
+    const devUri = process.env.MONGODB_URI_DEV || process.env.MONGODB_URI;
+    if (!devUri) {
+        throw new Error("Please define MONGODB_URI_DEV or MONGODB_URI environment variable");
+    }
+    return devUri;
 };
 
 /**
