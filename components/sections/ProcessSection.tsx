@@ -119,20 +119,37 @@ export function ProcessSection({ steps }: ProcessSectionProps) {
                     height: activeStep === step._id ? "auto" : 0, 
                     opacity: activeStep === step._id ? 1 : 0 
                   }}
-                  transition={{ duration: 0.3 }}
+                  transition={{ duration: 0.4, ease: "easeInOut" }}
                   className="overflow-hidden"
                 >
-                  <p className="text-gray-400 text-xs text-center mb-3 leading-relaxed">
-                    {step.description}
-                  </p>
-                  <ul className="space-y-1">
-                    {step.items.map((item, i) => (
-                      <li key={i} className="flex items-center text-xs text-gray-300 justify-center">
-                        <span className="w-1 h-1 rounded-full bg-primary mr-2" />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
+                  <div className="bg-[#1a1a1a]/80 backdrop-blur-sm border border-primary/20 rounded-xl p-4 mt-3 shadow-lg">
+                    {/* Main Description */}
+                    <p className="text-gray-300 text-sm text-center mb-4 leading-relaxed font-light">
+                      {step.description}
+                    </p>
+                    
+                    {/* Separator */}
+                    {step.items.length > 0 && (
+                      <div className="w-full h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent mb-4" />
+                    )}
+                    
+                    {/* Key Activities/Items */}
+                    {step.items.length > 0 && (
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-center gap-2 mb-3">
+                          <span className="text-primary text-xs font-bold tracking-wider uppercase">Key Activities</span>
+                        </div>
+                        <ul className="space-y-2">
+                          {step.items.map((item, i) => (
+                            <li key={i} className="flex items-start text-xs text-gray-300 group/item">
+                              <span className="text-primary mr-2 mt-0.5 flex-shrink-0 group-hover/item:scale-125 transition-transform">→</span>
+                              <span className="leading-relaxed">{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
                 </motion.div>
               </motion.div>
             ))}
